@@ -1,0 +1,6 @@
+@Artblog.API_HostAddress = http://localhost:5240
+
+GET {{Artblog.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
