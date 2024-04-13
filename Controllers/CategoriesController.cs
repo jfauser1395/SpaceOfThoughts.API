@@ -1,6 +1,7 @@
 ﻿using Artblog.API.Data;
 using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
+using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +12,11 @@ namespace Artblog.API.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly ICategoryRepository categoryRepository;
 
-        public CategoriesController(ApplicationDbContext dbContext)
+        public CategoriesController(ICategoryRepository categoryRepository)
         {
-            this.dbContext = dbContext;
+            this.categoryRepository = categoryRepository;
         }
 
         // 
@@ -29,8 +30,8 @@ namespace Artblog.API.Controllers
                 UrlHandle = request.UrlHandle
             };
 
-           await dbContext.Categories.AddAsync(category);
-            await dbContext.SaveChangesAsync();
+            await categoryRepository.CreateAsync(category);
+           
 
             // Domain model to DTO
             var response = new CategoryDto
