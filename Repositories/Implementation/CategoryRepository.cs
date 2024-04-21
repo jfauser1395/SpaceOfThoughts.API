@@ -1,6 +1,7 @@
 ﻿using Artblog.API.Data;
 using Artblog.API.Models.Domain;
 using Artblog.API.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Repositories.Implementation
 {
@@ -20,5 +21,16 @@ namespace Artblog.API.Repositories.Implementation
 
             return category;
         }
+
+        public async Task<IEnumerable<Category>> GetAllAsync()
+        {
+            return  await dbContext.Categories.ToListAsync();
+        }
+
+        public async Task<Category?> GetById(Guid id)
+        {
+            return await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }
+

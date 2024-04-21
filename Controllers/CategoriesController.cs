@@ -21,7 +21,7 @@ namespace Artblog.API.Controllers
 
         // 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory(CreateCategoryRequestDto request)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
             // Map DTO to Domain Model
             var category = new Category
@@ -31,7 +31,7 @@ namespace Artblog.API.Controllers
             };
 
             await categoryRepository.CreateAsync(category);
-           
+
 
             // Domain model to DTO
             var response = new CategoryDto
@@ -39,6 +39,48 @@ namespace Artblog.API.Controllers
                 Id = category.Id,
                 Name = request.Name,
                 UrlHandle = request.UrlHandle
+            };
+
+            return Ok(response);
+        }
+
+        // GET: https://localhost:7058/api/Categories
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var categories = await categoryRepository.GetAllAsync();
+
+            // Map Domain modle to DTO
+            var response = new List<CategoryDto>();
+            foreach (var category in categories)
+            {
+                response.Add(new CategoryDto
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    UrlHandle = category.UrlHandle
+                });
+            }
+
+            return Ok(response);
+        }
+
+        // GET: https://localhost:7058/api/Categories/{id}
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
+        {
+            var existingcategory = await categoryRepository.GetById(id);
+
+            if (existingcategory is null)
+            {
+                return NotFound();
+            }
+            var response = new CategoryDto
+            {
+                Id = existingcategory.Id,
+                Name = existingcategory.Name,
+                UrlHandle = existingcategory.UrlHandle
             };
 
             return Ok(response);
