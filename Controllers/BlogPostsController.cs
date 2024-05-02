@@ -33,7 +33,13 @@ namespace Artblog.API.Controllers
                 ShortDescription = request.ShortDescription,
                 Title = request.Title,
                 UrlHandle = request.UrlHandle,
+                Categories = new List<Category>()
             };
+
+            foreach (var categoryGuid in request.Categories) 
+            { 
+                
+            }
 
             blogPost = await blogPostRepository.CreateAsync(blogPost);
 
