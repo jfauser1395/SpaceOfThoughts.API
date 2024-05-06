@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Repositories.Implementation
 {
-    public class BlogPOstRepository : IBlogPostRepository
+    public class BlogPostRepository : IBlogPostRepository
     {
         private readonly ApplicationDbContext dbContext;
-        public BlogPOstRepository(ApplicationDbContext dbContext)
+        public BlogPostRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

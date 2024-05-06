@@ -18,7 +18,7 @@ namespace Artblog.API.Controllers
             this.blogPostRepository = blogPostRepository;
         }
 
-        // POST: {apibaseurl}/api/blogpost
+        // POST: {apiBaseUrl}/api/blogpost
         [HttpPost]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
         {
