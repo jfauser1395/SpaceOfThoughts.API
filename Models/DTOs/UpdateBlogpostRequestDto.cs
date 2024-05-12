@@ -1,9 +1,7 @@
 ﻿namespace Artblog.API.Models.DTOs
 {
-    public class BlogPostDto
+    public class UpdateBlogpostRequestDto
     {
-        public Guid Id { get; set; }
-
         public string Title { get; set; }
 
         public string ShortDescription { get; set; }
@@ -20,6 +18,6 @@
 
         public bool IsVisible { get; set; }
 
-        public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+        public List<Guid> Categories { get; set; } = new List<Guid>();
     }
 }
