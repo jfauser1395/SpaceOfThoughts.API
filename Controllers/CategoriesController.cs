@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Controllers
-{   // https://localhost:xxxx/api/categories
+{ // https://localhost:xxxx/api/categories
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -19,19 +19,14 @@ namespace Artblog.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-        // 
+        //
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
             // Map DTO to Domain Model
-            var category = new Category
-            {
-                Name = request.Name,
-                UrlHandle = request.UrlHandle
-            };
+            var category = new Category { Name = request.Name, UrlHandle = request.UrlHandle };
 
             await categoryRepository.CreateAsync(category);
-
 
             // Domain model to DTO
             var response = new CategoryDto
@@ -54,12 +49,14 @@ namespace Artblog.API.Controllers
             var response = new List<CategoryDto>();
             foreach (var category in categories)
             {
-                response.Add(new CategoryDto
-                {
-                    Id = category.Id,
-                    Name = category.Name,
-                    UrlHandle = category.UrlHandle
-                });
+                response.Add(
+                    new CategoryDto
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        UrlHandle = category.UrlHandle
+                    }
+                );
             }
 
             return Ok(response);
@@ -89,9 +86,12 @@ namespace Artblog.API.Controllers
         // PUT: https://localhost:7058/api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> EditCategory([FromRoute] Guid id, UpdateCategoryRequestDto request)
+        public async Task<IActionResult> EditCategory(
+            [FromRoute] Guid id,
+            UpdateCategoryRequestDto request
+        )
         {
-            // Convert DTO to Domain model 
+            // Convert DTO to Domain model
             var category = new Category
             {
                 Id = id,
@@ -123,8 +123,8 @@ namespace Artblog.API.Controllers
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
             var category = await categoryRepository.DeleteAsync(id);
-            
-            if(category is null)
+
+            if (category is null)
             {
                 return NotFound();
             }
@@ -136,7 +136,7 @@ namespace Artblog.API.Controllers
                 Name = category.Name,
                 UrlHandle = category.UrlHandle
             };
-            
+
             return Ok(response);
         }
     }

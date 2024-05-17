@@ -14,8 +14,10 @@ namespace Artblog.API.Controllers
         private readonly IBlogPostRepository blogPostRepository;
         private readonly ICategoryRepository categoryRepository;
 
-        public BlogPostsController(IBlogPostRepository blogPostRepository,
-            ICategoryRepository categoryRepository)
+        public BlogPostsController(
+            IBlogPostRepository blogPostRepository,
+            ICategoryRepository categoryRepository
+        )
         {
             this.blogPostRepository = blogPostRepository;
             this.categoryRepository = categoryRepository;
@@ -39,8 +41,8 @@ namespace Artblog.API.Controllers
                 Categories = new List<Category>()
             };
 
-            foreach (var categoryGuid in request.Categories) 
-            { 
+            foreach (var categoryGuid in request.Categories)
+            {
                 var existingCategory = await categoryRepository.GetById(categoryGuid);
                 if (existingCategory != null)
                 {
@@ -62,12 +64,14 @@ namespace Artblog.API.Controllers
                 ShortDescription = blogPost.ShortDescription,
                 Title = blogPost.Title,
                 UrlHandle = blogPost.UrlHandle,
-                Categories = blogPost.Categories.Select(x => new CategoryDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    UrlHandle = x.UrlHandle
-                }).ToList()
+                Categories = blogPost
+                    .Categories.Select(x => new CategoryDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    })
+                    .ToList()
             };
 
             return Ok(response);
@@ -83,24 +87,28 @@ namespace Artblog.API.Controllers
             var response = new List<BlogPostDto>();
             foreach (var blogPost in blogPosts)
             {
-                response.Add(new BlogPostDto
-                {
-                    Id = blogPost.Id,
-                    Author = blogPost.Author,
-                    Content = blogPost.Content,
-                    FeaturedImageUrl = blogPost.FeaturedImageUrl,
-                    IsVisible = blogPost.IsVisible,
-                    PublishedDate = blogPost.PublishedDate,
-                    ShortDescription = blogPost.ShortDescription,
-                    Title = blogPost.Title,
-                    UrlHandle = blogPost.UrlHandle,
-                    Categories = blogPost.Categories.Select(x => new CategoryDto
+                response.Add(
+                    new BlogPostDto
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        UrlHandle = x.UrlHandle
-                    }).ToList()
-                });
+                        Id = blogPost.Id,
+                        Author = blogPost.Author,
+                        Content = blogPost.Content,
+                        FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                        IsVisible = blogPost.IsVisible,
+                        PublishedDate = blogPost.PublishedDate,
+                        ShortDescription = blogPost.ShortDescription,
+                        Title = blogPost.Title,
+                        UrlHandle = blogPost.UrlHandle,
+                        Categories = blogPost
+                            .Categories.Select(x => new CategoryDto
+                            {
+                                Id = x.Id,
+                                Name = x.Name,
+                                UrlHandle = x.UrlHandle
+                            })
+                            .ToList()
+                    }
+                );
             }
 
             return Ok(response);
@@ -131,12 +139,52 @@ namespace Artblog.API.Controllers
                 ShortDescription = blogPost.ShortDescription,
                 Title = blogPost.Title,
                 UrlHandle = blogPost.UrlHandle,
-                Categories = blogPost.Categories.Select(x => new CategoryDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    UrlHandle = x.UrlHandle
-                }).ToList()
+                Categories = blogPost
+                    .Categories.Select(x => new CategoryDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    })
+                    .ToList()
+            };
+
+            return Ok(response);
+        }
+
+        // GET: {apiBaseUrl}/api/blogPost/{urlHandle}
+        [HttpGet]
+        [Route("{urlHandle}")]
+        public async Task<IActionResult> GetBlogPostByUrl([FromRoute] string urlHandle)
+        {
+            // Get Blog Post details from repository
+            var blogPost = await blogPostRepository.GetByUrlHandleAsync(urlHandle);
+
+            if (blogPost == null)
+            {
+                return NotFound();
+            }
+
+            // Convert Domain Model to DTO
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Author = blogPost.Author,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                IsVisible = blogPost.IsVisible,
+                PublishedDate = blogPost.PublishedDate,
+                ShortDescription = blogPost.ShortDescription,
+                Title = blogPost.Title,
+                UrlHandle = blogPost.UrlHandle,
+                Categories = blogPost
+                    .Categories.Select(x => new CategoryDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    })
+                    .ToList()
             };
 
             return Ok(response);
@@ -145,7 +193,10 @@ namespace Artblog.API.Controllers
         // PUT: {apiBaseUrl}/api/blogposts/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateBlogPostById([FromRoute] Guid id, UpdateBlogpostRequestDto request)
+        public async Task<IActionResult> UpdateBlogPostById(
+            [FromRoute] Guid id,
+            UpdateBlogpostRequestDto request
+        )
         {
             // Convert DTO to Domain Model
             var blogPost = new BlogPost
@@ -162,7 +213,6 @@ namespace Artblog.API.Controllers
                 Categories = new List<Category>()
             };
 
-             
             foreach (var categoryGuid in request.Categories)
             {
                 var existingCategory = await categoryRepository.GetById(categoryGuid);
@@ -193,12 +243,14 @@ namespace Artblog.API.Controllers
                 ShortDescription = blogPost.ShortDescription,
                 Title = blogPost.Title,
                 UrlHandle = blogPost.UrlHandle,
-                Categories = blogPost.Categories.Select(x => new CategoryDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    UrlHandle = x.UrlHandle
-                }).ToList()
+                Categories = blogPost
+                    .Categories.Select(x => new CategoryDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    })
+                    .ToList()
             };
 
             return Ok(response);
@@ -209,7 +261,7 @@ namespace Artblog.API.Controllers
         public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
         {
             var deletedBlogPost = await blogPostRepository.DeleteAsync(id);
-            
+
             if (deletedBlogPost == null)
             {
                 return NotFound();

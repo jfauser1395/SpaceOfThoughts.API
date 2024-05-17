@@ -1,6 +1,6 @@
-﻿namespace Artblog.API.Models.Domain
+﻿namespace Artblog.API.Models.DTOs
 {
-    public class BlogImage
+    public class BlogImageDto
     {
         public Guid Id { get; set; }
 
