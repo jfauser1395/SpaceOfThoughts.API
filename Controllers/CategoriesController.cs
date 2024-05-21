@@ -2,6 +2,7 @@
 using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
 using Artblog.API.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace Artblog.API.Controllers
 
         //
         [HttpPost]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
             // Map DTO to Domain Model
@@ -39,11 +41,23 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: https://localhost:7058/api/Categories
+        // GET: https://localhost:7058/api/Categories?query=example&sortBy=example1&sortDirection=desc
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories(
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize
+        )
         {
-            var categories = await categoryRepository.GetAllAsync();
+            var categories = await categoryRepository.GetAllAsync(
+                query,
+                sortBy,
+                sortDirection,
+                pageNumber,
+                pageSize
+            );
 
             // Map Domain modle to DTO
             var response = new List<CategoryDto>();
@@ -83,9 +97,21 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
+        // GET: https://localhost:7058/api/Categories/count
+        [HttpGet]
+        [Route("count")]
+        [Authorize(Roles = "Writer")]
+        public async Task<IActionResult> GetCategoriesTatal()
+        {
+            var count = await categoryRepository.GetCount();
+
+            return Ok(count);
+        }
+
         // PUT: https://localhost:7058/api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditCategory(
             [FromRoute] Guid id,
             UpdateCategoryRequestDto request
@@ -120,6 +146,7 @@ namespace Artblog.API.Controllers
         // Delete: https://localhost:7058/api/categories/{id}
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
             var category = await categoryRepository.DeleteAsync(id);
