@@ -157,15 +157,15 @@ namespace Artblog.API.Migrations.AuthDb
                         {
                             Id = "6542a5f0-8e4f-44df-a7e8-afbee3ad97cf",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "83baf556-8aa2-48a3-b13f-22cafb953e1a",
+                            ConcurrencyStamp = "53edbbc3-86e2-4738-bb80-75207184393b",
                             Email = "admin@artblog.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ARTBLOG.COM",
                             NormalizedUserName = "ADMIN@ARTBLOG.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBsuvJP70Mn4ermbhsKj+zI3OCfopMyd8wQQ/kJjf94Pl2ohO9kpzBFg2vtFYtqYZQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECMGIfOC/dkCgQfrsjzhfV7yjpeP4ouf51rUfDZLEHZmwaykwLMywDV23xbi0IzLXw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "30cfca5e-5d16-4822-8a48-4f791214f3fa",
+                            SecurityStamp = "48ea0ffe-b79d-423c-8ba4-309849e9c0fd",
                             TwoFactorEnabled = false,
                             UserName = "admin@artblog.com"
                         });

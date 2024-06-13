@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Artblog.API.Migrations.AuthDb
 {
     /// <inheritdoc />
-    public partial class InitialMigrationforAuth : Migration
+    public partial class InitialCreateAuth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -210,7 +210,7 @@ namespace Artblog.API.Migrations.AuthDb
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "6542a5f0-8e4f-44df-a7e8-afbee3ad97cf", 0, "83baf556-8aa2-48a3-b13f-22cafb953e1a", "admin@artblog.com", false, false, null, "ADMIN@ARTBLOG.COM", "ADMIN@ARTBLOG.COM", "AQAAAAIAAYagAAAAEBsuvJP70Mn4ermbhsKj+zI3OCfopMyd8wQQ/kJjf94Pl2ohO9kpzBFg2vtFYtqYZQ==", null, false, "30cfca5e-5d16-4822-8a48-4f791214f3fa", false, "admin@artblog.com" });
+                values: new object[] { "6542a5f0-8e4f-44df-a7e8-afbee3ad97cf", 0, "53edbbc3-86e2-4738-bb80-75207184393b", "admin@artblog.com", false, false, null, "ADMIN@ARTBLOG.COM", "ADMIN@ARTBLOG.COM", "AQAAAAIAAYagAAAAECMGIfOC/dkCgQfrsjzhfV7yjpeP4ouf51rUfDZLEHZmwaykwLMywDV23xbi0IzLXw==", null, false, "48ea0ffe-b79d-423c-8ba4-309849e9c0fd", false, "admin@artblog.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

@@ -26,7 +26,7 @@ namespace Artblog.API.Controllers
 
         // POST: {apiBaseUrl}/api/blogpost
         [HttpPost]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
         {
             //Convert DTO to Domain
@@ -195,7 +195,7 @@ namespace Artblog.API.Controllers
         // PUT: {apiBaseUrl}/api/blogposts/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> UpdateBlogPostById(
             [FromRoute] Guid id,
             UpdateBlogpostRequestDto request
@@ -261,7 +261,7 @@ namespace Artblog.API.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
         {
             var deletedBlogPost = await blogPostRepository.DeleteAsync(id);

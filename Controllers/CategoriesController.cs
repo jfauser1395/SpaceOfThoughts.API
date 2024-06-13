@@ -22,7 +22,7 @@ namespace Artblog.API.Controllers
 
         //
         [HttpPost]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
             // Map DTO to Domain Model
@@ -100,7 +100,7 @@ namespace Artblog.API.Controllers
         // GET: https://localhost:7058/api/Categories/count
         [HttpGet]
         [Route("count")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> GetCategoriesTatal()
         {
             var count = await categoryRepository.GetCount();
@@ -111,7 +111,7 @@ namespace Artblog.API.Controllers
         // PUT: https://localhost:7058/api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditCategory(
             [FromRoute] Guid id,
             UpdateCategoryRequestDto request
@@ -146,7 +146,7 @@ namespace Artblog.API.Controllers
         // Delete: https://localhost:7058/api/categories/{id}
         [HttpDelete]
         [Route("{id:guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
             var category = await categoryRepository.DeleteAsync(id);
