@@ -1,4 +1,4 @@
-﻿namespace Artblog.API.Models.Domain
+﻿namespace Artblog.API.Models.DTOs
 {
     public class LoginRequestDto
     {

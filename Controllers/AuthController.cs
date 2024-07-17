@@ -1,5 +1,4 @@
-﻿using Artblog.API.Models.Domain;
-using Artblog.API.Models.DTOs;
+﻿using Artblog.API.Models.DTOs;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +22,7 @@ namespace Artblog.API.Controllers
             this.tokenRepository = tokenRepository;
         }
 
-        // Post: {apiBaseUrl}/api/auth/login
+        // POST: {apiBaseUrl}/api/auth/login
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
@@ -47,6 +46,7 @@ namespace Artblog.API.Controllers
 
                     var response = new LoginResponseDto
                     {
+                        UserName = identityUser.UserName,
                         Email = request.Email,
                         Roles = roles.ToList(),
                         Token = jwtToken
@@ -55,7 +55,7 @@ namespace Artblog.API.Controllers
                     return Ok(response);
                 }
             }
-            ModelState.AddModelError("", "Email or Password Incorrect");
+            ModelState.AddModelError("", "Email/User Name or Password Incorrect");
 
             return ValidationProblem(ModelState);
         }
@@ -68,7 +68,7 @@ namespace Artblog.API.Controllers
             // Create IdentityUser object
             var user = new IdentityUser
             {
-                UserName = request.Email?.Trim(),
+                UserName = request.UserName?.Trim(),
                 Email = request.Email?.Trim()
             };
 

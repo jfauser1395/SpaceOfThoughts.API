@@ -43,16 +43,16 @@ namespace Artblog.API.Data
             var admin = new IdentityUser()
             {
                 Id = adminUserId,
-                UserName = "admin@artblog.com",
+                UserName = "admin",
                 Email = "admin@artblog.com",
                 NormalizedEmail = "admin@artblog.com".ToUpper(),
-                NormalizedUserName = "admin@artblog.com".ToUpper()
+                NormalizedUserName = "admin".ToUpper()
             };
 
             // Generate Password
             admin.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(
                 admin,
-                "Admin@123"
+                "Admin@123" // example password please change before publishing
             );
 
             builder.Entity<IdentityUser>().HasData(admin);
