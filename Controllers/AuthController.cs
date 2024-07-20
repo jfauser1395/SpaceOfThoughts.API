@@ -55,7 +55,7 @@ namespace Artblog.API.Controllers
                     return Ok(response);
                 }
             }
-            ModelState.AddModelError("", "Email/User Name or Password Incorrect");
+            ModelState.AddModelError("", "Email or Password incorrect");
 
             return ValidationProblem(ModelState);
         }
