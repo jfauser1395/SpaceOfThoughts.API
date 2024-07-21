@@ -47,6 +47,7 @@ namespace Artblog.API.Controllers
 
                     var response = new LoginResponseDto
                     {
+                        Id = identityUser.Id,
                         UserName = identityUser.UserName,
                         Email = request.Email,
                         Roles = roles.ToList(),
@@ -126,7 +127,7 @@ namespace Artblog.API.Controllers
             return ValidationProblem(ModelState);
         }
 
-        // GET: {apiBaseUrl}/api/users
+        // GET: {apiBaseUrl}/api/auth/users
         [HttpGet]
         [Route("users")]
         public async Task<IActionResult> GetAllUsers()
@@ -139,6 +140,7 @@ namespace Artblog.API.Controllers
                 var roles = await userManager.GetRolesAsync(user);
                 var userResponse = new UserResponseDto
                 {
+                    Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
                     Roles = roles
@@ -149,12 +151,12 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/users/{username}
+        // GET: {apiBaseUrl}/api/auth/users/{id}
         [HttpGet]
-        [Route("users/{username}")]
-        public async Task<IActionResult> GetUserByUsername(string username)
+        [Route("users/{id}")]
+        public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
-            var user = await userManager.FindByNameAsync(username);
+            var user = await userManager.FindByIdAsync(id);
             if (user is null)
             {
                 return NotFound();
@@ -163,6 +165,7 @@ namespace Artblog.API.Controllers
             var roles = await userManager.GetRolesAsync(user);
             var response = new UserResponseDto
             {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 Roles = roles
@@ -171,12 +174,12 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // Delete: {apiBaseUrl}/api/users/{username}
+        // Delete: {apiBaseUrl}/api/atuh/users/{id}
         [HttpDelete]
-        [Route("users/{username}")]
-        public async Task<IActionResult> DeleteUser(string username)
+        [Route("users/{id}")]
+        public async Task<IActionResult> DeleteUser([FromRoute] string id)
         {
-            var user = await userManager.FindByNameAsync(username);
+            var user = await userManager.FindByNameAsync(id);
             if (user is null)
             {
                 return NotFound();
