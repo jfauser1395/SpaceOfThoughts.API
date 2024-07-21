@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Controllers
-{ // https://localhost:xxxx/api/categories
+{
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -20,6 +20,7 @@ namespace Artblog.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
+        // POST: {apiBaseUrl}/api/categories
         [HttpPost]
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
@@ -40,7 +41,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: https://localhost:7000/api/Categories?query=example&sortBy=example1&sortDirection=desc
+        // GET: {apiBaseUrl}/api/Categories?query=example&sortBy=example1&sortDirection=desc
         [HttpGet]
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> GetAllCategories(
@@ -59,7 +60,7 @@ namespace Artblog.API.Controllers
                 pageSize
             );
 
-            // Map Domain modle to DTO
+            // Map Domain model to DTO
             var response = new List<CategoryDto>();
             foreach (var category in categories)
             {
@@ -76,7 +77,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: https://localhost:7000/api/Categories/{id}
+        // GET: {apiBaseUrl}/api/Categories/{id}
         [HttpGet]
         [Route("{id:Guid}")]
         [Authorize(Roles = "Writer")]
@@ -98,7 +99,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: https://localhost:7000/api/Categories/count
+        // GET: {apiBaseUrl}/api/Categories/count
         [HttpGet]
         [Route("count")]
         [Authorize(Roles = "Writer")]
@@ -109,7 +110,7 @@ namespace Artblog.API.Controllers
             return Ok(count);
         }
 
-        // PUT: https://localhost:7000/api/categories/{id}
+        // PUT: {apiBaseUrl}/api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
         [Authorize(Roles = "Writer")]
@@ -144,7 +145,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // Delete: https://localhost:7000/api/categories/{id}
+        // Delete:{apiBaseUrl}/api/categories/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         [Authorize(Roles = "Writer")]

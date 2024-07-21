@@ -1,4 +1,5 @@
 ﻿using Artblog.API.Models.DTOs;
+using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -65,6 +66,22 @@ namespace Artblog.API.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
+            // Check if the email is already taken
+            var existingUserByEmail = await userManager.FindByEmailAsync(request.Email);
+            if (existingUserByEmail != null)
+            {
+                ModelState.AddModelError("", "Email is already taken");
+                return ValidationProblem(ModelState);
+            }
+
+            // Check if the username is already taken
+            var existingUserByUsername = await userManager.FindByNameAsync(request.UserName);
+            if (existingUserByUsername != null)
+            {
+                ModelState.AddModelError("", "Username is already taken");
+                return ValidationProblem(ModelState);
+            }
+
             // Create IdentityUser object
             var user = new IdentityUser
             {
@@ -107,6 +124,71 @@ namespace Artblog.API.Controllers
             }
 
             return ValidationProblem(ModelState);
+        }
+
+        // GET: {apiBaseUrl}/api/users
+        [HttpGet]
+        [Route("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = userManager.Users.ToList();
+            var response = new List<UserResponseDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                var userResponse = new UserResponseDto
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = roles
+                };
+                response.Add(userResponse);
+            }
+
+            return Ok(response);
+        }
+
+        // GET: {apiBaseUrl}/api/users/{username}
+        [HttpGet]
+        [Route("users/{username}")]
+        public async Task<IActionResult> GetUserByUsername(string username)
+        {
+            var user = await userManager.FindByNameAsync(username);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+            var response = new UserResponseDto
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Roles = roles
+            };
+
+            return Ok(response);
+        }
+
+        // Delete: {apiBaseUrl}/api/users/{username}
+        [HttpDelete]
+        [Route("users/{username}")]
+        public async Task<IActionResult> DeleteUser(string username)
+        {
+            var user = await userManager.FindByNameAsync(username);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var result = await userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok();
         }
     }
 }
