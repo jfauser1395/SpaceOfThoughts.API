@@ -68,9 +68,16 @@ namespace Artblog.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
             // Check if the email entry is formatted correctly
-            var enteredEmail = request.Email;
-            var addr = new System.Net.Mail.MailAddress(request.Email);
-            if (addr.Address == enteredEmail)
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(request.Email);
+                if (addr.Address != request.Email)
+                {
+                    ModelState.AddModelError("", "Invalid email format");
+                    return ValidationProblem(ModelState);
+                }
+            }
+            catch (FormatException)
             {
                 ModelState.AddModelError("", "Invalid email format");
                 return ValidationProblem(ModelState);
