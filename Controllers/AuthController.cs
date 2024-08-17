@@ -67,9 +67,18 @@ namespace Artblog.API.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
+            // Check if the email entry is formatted correctly
+            var enteredEmail = request.Email;
+            var addr = new System.Net.Mail.MailAddress(request.Email);
+            if (addr.Address == enteredEmail)
+            {
+                ModelState.AddModelError("", "Invalid email format");
+                return ValidationProblem(ModelState);
+            }
+
             // Check if the email is already taken
             var existingUserByEmail = await userManager.FindByEmailAsync(request.Email);
-            if (existingUserByEmail != null)
+            if (existingUserByEmail is not null)
             {
                 ModelState.AddModelError("", "Email is already taken");
                 return ValidationProblem(ModelState);
@@ -77,7 +86,7 @@ namespace Artblog.API.Controllers
 
             // Check if the username is already taken
             var existingUserByUsername = await userManager.FindByNameAsync(request.UserName);
-            if (existingUserByUsername != null)
+            if (existingUserByUsername is not null)
             {
                 ModelState.AddModelError("", "Username is already taken");
                 return ValidationProblem(ModelState);
@@ -174,12 +183,12 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // Delete: {apiBaseUrl}/api/atuh/users/{id}
+        // Delete: {apiBaseUrl}/api/auth/users/{id}
         [HttpDelete]
         [Route("users/{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] string id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await userManager.FindByNameAsync(id);
+            var user = await userManager.FindByIdAsync(id);
             if (user is null)
             {
                 return NotFound();
