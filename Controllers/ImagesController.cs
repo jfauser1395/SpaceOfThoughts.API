@@ -47,7 +47,7 @@ namespace Artblog.API.Controllers
         // Post: {apiBaseUrl}/api/images
         [HttpPost]
         public async Task<IActionResult> UploadImage(
-            [FromForm] IFormFile file,
+            IFormFile file,
             [FromForm] string fileName,
             [FromForm] string title
         )
