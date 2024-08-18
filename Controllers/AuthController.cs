@@ -79,7 +79,7 @@ namespace Artblog.API.Controllers
             }
             catch (FormatException)
             {
-                ModelState.AddModelError("", "Invalid email format");
+                ModelState.AddModelError("emailFormat", "Invalid email format");
                 return ValidationProblem(ModelState);
             }
 
@@ -87,7 +87,7 @@ namespace Artblog.API.Controllers
             var existingUserByEmail = await userManager.FindByEmailAsync(request.Email);
             if (existingUserByEmail is not null)
             {
-                ModelState.AddModelError("", "Email is already taken");
+                ModelState.AddModelError("email", "Email is already taken");
                 return ValidationProblem(ModelState);
             }
 
@@ -95,7 +95,7 @@ namespace Artblog.API.Controllers
             var existingUserByUsername = await userManager.FindByNameAsync(request.UserName);
             if (existingUserByUsername is not null)
             {
-                ModelState.AddModelError("", "Username is already taken");
+                ModelState.AddModelError("userName", "Username is already taken");
                 return ValidationProblem(ModelState);
             }
 

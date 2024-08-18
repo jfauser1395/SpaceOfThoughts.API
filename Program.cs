@@ -3,9 +3,11 @@ using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,24 @@ builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Implement response compression
+builder.Services.AddResponseCompression(options =>
+{ 
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.SmallestSize;
+});
 
 // Inject DbContext service to the builder and pass the connection string
 var connectionString = builder.Configuration.GetConnectionString("ArtblogConnectionString");
@@ -45,9 +65,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 7;
-    options.Password.RequiredUniqueChars = 1;
+    options.Password.RequiredUniqueChars = 3;
 });
 
 builder
@@ -101,5 +121,7 @@ app.UseStaticFiles(
 );
 
 app.MapControllers();
+
+app.UseResponseCompression();
 
 app.Run();
