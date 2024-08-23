@@ -57,7 +57,7 @@ namespace Artblog.API.Controllers
                     return Ok(response);
                 }
             }
-            ModelState.AddModelError("", "Email or Password incorrect");
+            ModelState.AddModelError("", "Email or Password is incorrect");
 
             return ValidationProblem(ModelState);
         }
@@ -120,22 +120,28 @@ namespace Artblog.API.Controllers
                 }
                 else
                 {
+                    int errorIndex = 1;
+
                     if (identityResult.Errors.Any())
                     {
                         foreach (var error in identityResult.Errors)
                         {
-                            ModelState.AddModelError("", error.Description);
+                            ModelState.AddModelError($"{errorIndex}", error.Description);
+                            errorIndex++;
                         }
                     }
                 }
             }
             else
             {
+                int errorIndex = 1;
+
                 if (identityResult.Errors.Any())
                 {
                     foreach (var error in identityResult.Errors)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        ModelState.AddModelError($"{errorIndex}", error.Description);
+                        errorIndex++;
                     }
                 }
             }
