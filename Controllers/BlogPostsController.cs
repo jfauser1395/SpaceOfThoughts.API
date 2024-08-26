@@ -1,5 +1,6 @@
 ﻿using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
+using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +24,7 @@ namespace Artblog.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-        // POST: {apiBaseUrl}/api/blogpost
+        // POST: {apiBaseUrl}/api/blogposts
         [HttpPost]
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
@@ -78,11 +79,23 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/blogposts
+        // GET: {apiBaseUrl}/api/blogposts?query=example@sortBy=title@sortDirection=desc
         [HttpGet]
-        public async Task<IActionResult> GetAllBlogPosts()
+        public async Task<IActionResult> GetAllBlogPosts(
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize
+        )
         {
-            var blogPosts = await blogPostRepository.GetAllAsync();
+            var blogPosts = await blogPostRepository.GetAllAsync(
+                query,
+                sortBy,
+                sortDirection,
+                pageNumber,
+                pageSize
+            );
 
             // Convert Domain model to DTO
             var response = new List<BlogPostDto>();
@@ -153,7 +166,17 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/blogPost/{urlHandle}
+        // GET: {apiBaseUrl}/api/blogposts/count
+        [HttpGet]
+        [Route("count")]
+        public async Task<IActionResult> GetBlogPostTotal()
+        {
+            var count = await blogPostRepository.GetCount();
+
+            return Ok(count);
+        }
+
+        // GET: {apiBaseUrl}/api/blogPosts/{urlHandle}
         [HttpGet]
         [Route("{urlHandle}")]
         public async Task<IActionResult> GetBlogPostByUrl([FromRoute] string urlHandle)
@@ -258,6 +281,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
+        // Delete:{apiBaseUrl}/api/blogposts/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         [Authorize(Roles = "Writer")]

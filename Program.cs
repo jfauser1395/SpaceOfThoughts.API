@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using Artblog.API.Data;
 using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
@@ -7,12 +8,10 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
-using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
@@ -22,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 // Implement response compression
 builder.Services.AddResponseCompression(options =>
-{ 
+{
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();

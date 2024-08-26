@@ -72,10 +72,10 @@ namespace Artblog.API.Repositories.Implementation
             }
 
             // Pagination
-
-            // Pagenumber 1 pagesize 5- skip0, take 5  (and so on)
+            // Page number 1 page size 5- skip0, take 5  (and so on)
             var skipResult = (pageNumber - 1) * pageSize;
             categories = categories.Skip(skipResult ?? 0).Take(pageSize ?? 100);
+
             return await categories.ToListAsync();
         }
 

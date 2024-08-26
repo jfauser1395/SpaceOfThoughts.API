@@ -35,9 +35,48 @@ namespace Artblog.API.Repositories.Implementation
             return null;
         }
 
-        public async Task<IEnumerable<BlogPost>> GetAllAsync()
+        public async Task<IEnumerable<BlogPost>> GetAllAsync(
+            string? query = null,
+            string? sortBy = null,
+            string? sortDirection = null,
+            int? pageNumber = 1,
+            int? pageSize = 100
+        )
         {
-            return await dbContext.BlogPosts.Include(x => x.Categories).ToListAsync();
+            // Query
+            var blogPosts = dbContext.BlogPosts.AsQueryable();
+
+            // Filtering
+            if (string.IsNullOrWhiteSpace(query) == false)
+            {
+                blogPosts = blogPosts.Where(x => x.Title.Contains(query));
+            }
+
+            // Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if (string.Equals(sortBy, "PublishedDate", StringComparison.OrdinalIgnoreCase))
+                {
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                        ? true
+                        : false;
+
+                    blogPosts = isAsc
+                        ? blogPosts.OrderBy(x => x.PublishedDate)
+                        : blogPosts.OrderByDescending(x => x.PublishedDate);
+                }
+            }
+
+            // Pagination
+            // Page number 1 page size 5- skip0, take 5  (and so on)
+            var skipResults = (pageNumber - 1) * pageSize;
+            blogPosts = blogPosts.Skip(skipResults ?? 0).Take(pageSize ?? 100);
+
+            return await blogPosts.Include(x => x.Categories).ToListAsync();
         }
 
         public async Task<BlogPost?> GetByIdAsync(Guid id)
@@ -52,6 +91,11 @@ namespace Artblog.API.Repositories.Implementation
             return await dbContext
                 .BlogPosts.Include(x => x.Categories)
                 .FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
+        }
+
+        public async Task<int> GetCount()
+        {
+            return await dbContext.BlogPosts.CountAsync();
         }
 
         public async Task<BlogPost?> UpdateAsync(BlogPost blogPost)

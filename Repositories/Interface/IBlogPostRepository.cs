@@ -6,7 +6,15 @@ namespace Artblog.API.Repositories.Interface
     {
         Task<BlogPost> CreateAsync(BlogPost blogPost);
 
-        Task<IEnumerable<BlogPost>> GetAllAsync();
+        Task<IEnumerable<BlogPost>> GetAllAsync(
+            string? query = null,
+            string? sortBy = null,
+            string? sortDirection = null,
+            int? pageNumber = 1,
+            int? pageSize = 100
+        );
+
+        Task<int> GetCount();
 
         Task<BlogPost?> GetByIdAsync(Guid id);
 
