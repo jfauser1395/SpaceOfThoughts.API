@@ -83,17 +83,17 @@ namespace Artblog.API.Controllers
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
         {
-            var existingcategory = await categoryRepository.GetById(id);
+            var existentCategory = await categoryRepository.GetById(id);
 
-            if (existingcategory is null)
+            if (existentCategory is null)
             {
                 return NotFound();
             }
             var response = new CategoryDto
             {
-                Id = existingcategory.Id,
-                Name = existingcategory.Name,
-                UrlHandle = existingcategory.UrlHandle
+                Id = existentCategory.Id,
+                Name = existentCategory.Name,
+                UrlHandle = existentCategory.UrlHandle
             };
 
             return Ok(response);
@@ -103,7 +103,7 @@ namespace Artblog.API.Controllers
         [HttpGet]
         [Route("count")]
         [Authorize(Roles = "Writer")]
-        public async Task<IActionResult> GetCategoriesTatal()
+        public async Task<IActionResult> GetCategoriesTotal()
         {
             var count = await categoryRepository.GetCount();
 
