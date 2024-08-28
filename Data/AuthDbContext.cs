@@ -39,14 +39,14 @@ namespace Artblog.API.Data
             builder.Entity<IdentityRole>().HasData(role);
 
             // Create an Admin User
-            var adminUserId = "6542a5f0-8e4f-44df-a7e8-afbee3ad97cf";
+            var adminUserId = "6542a5f0-8e4f-44df-a7e8-afbee3ad97cf"; // example user id need to be changed before publishing
             var admin = new IdentityUser()
             {
                 Id = adminUserId,
-                UserName = "admin",
-                Email = "admin@artblog.com",
+                UserName = "Admin",
+                Email = "admin@artblog.com", // example user name need to be changed before publishing
                 NormalizedEmail = "admin@artblog.com".ToUpper(),
-                NormalizedUserName = "admin".ToUpper()
+                NormalizedUserName = "Admin".ToUpper()
             };
 
             // Generate Password

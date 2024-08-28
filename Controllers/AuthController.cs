@@ -1,9 +1,12 @@
-﻿using Artblog.API.Models.DTOs;
+﻿using Artblog.API.Models.Domain;
+using Artblog.API.Models.DTOs;
 using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Controllers
 {
@@ -152,11 +155,54 @@ namespace Artblog.API.Controllers
         // GET: {apiBaseUrl}/api/auth/users
         [HttpGet]
         [Route("users")]
-        public async Task<IActionResult> GetAllUsers()
+        [Authorize(Roles = "Writer")]
+        public async Task<IActionResult> GetAllUsers(
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize
+        )
         {
-            var users = userManager.Users.ToList();
-            var response = new List<UserResponseDto>();
 
+            // Filter out admin user by name to not be displayed on the client
+            var usersQuery = userManager.Users.AsQueryable()
+                .Where(u => u.UserName != "Admin");
+
+            // Query
+            if (string.IsNullOrEmpty(query) == false)
+            {
+                usersQuery = usersQuery.Where(u => u.UserName.Contains(query));
+            }
+
+            // Sort
+            if (string.IsNullOrEmpty(sortBy) == false)
+            {
+                if (string.Equals(sortBy, "userName", StringComparison.OrdinalIgnoreCase))
+                {
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                        ? true
+                        : false;
+
+                    usersQuery = isAsc
+                        ? usersQuery.OrderBy(u => u.UserName)
+                        : usersQuery.OrderByDescending(u => u.UserName);
+
+                }
+            }
+
+            // Pagination
+            // Pag number 1 page size 5- skip 0, take 5 (and so on)
+            var skipResults = (pageNumber - 1) * pageSize;
+            usersQuery = usersQuery.Skip(skipResults ?? 0).Take(pageSize ?? 100);
+
+            // Convert to DTO
+            var users = await usersQuery.ToListAsync();
+            var response = new List<UserResponseDto>();
             foreach (var user in users)
             {
                 var roles = await userManager.GetRolesAsync(user);
@@ -176,6 +222,7 @@ namespace Artblog.API.Controllers
         // GET: {apiBaseUrl}/api/auth/users/{id}
         [HttpGet]
         [Route("users/{id}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -196,9 +243,20 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
+        // GET: {apiBaseUrl}/api/auth/count
+        [HttpGet]
+        [Route("count")]
+        public async Task<IActionResult> GetUsersTotal()
+        {
+            var count = await userManager.Users.CountAsync();
+
+            return Ok(count -1); // -1 because we do not count the admin
+        }
+
         // Delete: {apiBaseUrl}/api/auth/users/{id}
         [HttpDelete]
         [Route("users/{id}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);

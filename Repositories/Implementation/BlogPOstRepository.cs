@@ -72,7 +72,7 @@ namespace Artblog.API.Repositories.Implementation
             }
 
             // Pagination
-            // Page number 1 page size 5- skip0, take 5  (and so on)
+            // Page number 1 page size 5- skip 0, take 5  (and so on)
             var skipResults = (pageNumber - 1) * pageSize;
             blogPosts = blogPosts.Skip(skipResults ?? 0).Take(pageSize ?? 100);
 
