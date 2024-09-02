@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Threading.RateLimiting;
 using Artblog.API.Data;
 using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
@@ -22,36 +23,38 @@ builder.Services.AddSwaggerGen();
 // Implement response compression
 builder.Services.AddResponseCompression(options =>
 {
-    options.EnableForHttps = true;
-    options.Providers.Add<BrotliCompressionProvider>();
-    options.Providers.Add<GzipCompressionProvider>();
+    options.EnableForHttps = true; // Enable compression for HTTPS requests
+    options.Providers.Add<BrotliCompressionProvider>(); // Add Brotli compression provider
+    options.Providers.Add<GzipCompressionProvider>(); // Add Gzip compression provider
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
 {
-    options.Level = CompressionLevel.Fastest;
+    options.Level = CompressionLevel.Fastest; // Set Brotli compression level to fastest
 });
 
 builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 {
-    options.Level = CompressionLevel.SmallestSize;
+    options.Level = CompressionLevel.SmallestSize; // Set Gzip compression level to smallest size
 });
 
 // Inject DbContext service to the builder and pass the connection string
 var connectionString = builder.Configuration.GetConnectionString("ArtblogConnectionString");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)) // Use MySQL with auto-detected server version
 );
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)) // Use MySQL with auto-detected server version
 );
 
+// Register repositories for dependency injection
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
+// Configure Identity services
 builder
     .Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
@@ -59,16 +62,18 @@ builder
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
+// Password requirements 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 7;
-    options.Password.RequiredUniqueChars = 3;
+    options.Password.RequireDigit = false; // Do not require a digit in passwords
+    options.Password.RequireLowercase = false; // Do not require a lowercase letter in passwords
+    options.Password.RequireUppercase = false; // Do not require an uppercase letter in passwords
+    options.Password.RequireNonAlphanumeric = true; // Require a non-alphanumeric character in passwords
+    options.Password.RequiredLength = 7; // Set minimum password length to 7
+    options.Password.RequiredUniqueChars = 3; // Require at least 3 unique characters in passwords
 });
 
+// Configure JWT authentication
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -76,17 +81,33 @@ builder
         options.TokenValidationParameters = new TokenValidationParameters
         {
             AuthenticationType = "Jwt",
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateIssuer = true, // Validate the issuer of the token
+            ValidateAudience = true, // Validate the audience of the token
+            ValidateLifetime = true, // Validate the token's expiration
+            ValidateIssuerSigningKey = true, // Validate the signing key
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Set the valid issuer
+            ValidAudience = builder.Configuration["Jwt:Audience"], // Set the valid audience
             IssuerSigningKey = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]) // Set the signing key
             )
         };
     });
+
+// Add rate limiting to protect the API from abuse
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: "global",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100, // Allow 100 requests per window
+                Window = TimeSpan.FromMinutes(1) // Set the window duration to 1 minute
+            }
+        );
+    });
+});
 
 var app = builder.Build();
 
@@ -97,13 +118,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection will not be used because the API will run locally 
+//app.UseHttpsRedirection();
 
 app.UseCors(options =>
 {
-    options.AllowAnyHeader();
-    options.AllowAnyOrigin();
-    options.AllowAnyMethod();
+    options.AllowAnyHeader(); // Allow any header
+    options.AllowAnyOrigin(); // Allow any origin
+    options.AllowAnyMethod(); // Allow any method
 });
 
 app.UseAuthentication();
@@ -113,14 +135,23 @@ app.UseStaticFiles(
     new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(
-            Path.Combine(Directory.GetCurrentDirectory(), "Images")
+            Path.Combine(Directory.GetCurrentDirectory(), "Images") // Serve static files from the "Images" directory
         ),
-        RequestPath = "/Images"
+        RequestPath = "/Images" // Set the request path for static files
     }
 );
 
-app.MapControllers();
+// Add security headers to responses
+app.Use(
+    async (context, next) =>
+    {
+        context.Response.Headers.Append("X-Content-Type-Options", "nosniff"); // Prevent MIME type sniffing
+        context.Response.Headers.Append("X-Frame-Options", "DENY"); // Prevent clickjacking
+        context.Response.Headers.Append("X-XSS-Protection", "1; mode=block"); // Enable XSS protection
+        await next();
+    }
+);
 
-app.UseResponseCompression();
+app.UseResponseCompression(); // Enable response compression
 
 app.Run();

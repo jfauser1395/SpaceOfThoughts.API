@@ -164,10 +164,8 @@ namespace Artblog.API.Controllers
             [FromQuery] int? pageSize
         )
         {
-
             // Filter out admin user by name to not be displayed on the client
-            var usersQuery = userManager.Users.AsQueryable()
-                .Where(u => u.UserName != "Admin");
+            var usersQuery = userManager.Users.AsQueryable().Where(u => u.UserName != "Admin");
 
             // Query
             if (string.IsNullOrEmpty(query) == false)
@@ -191,7 +189,6 @@ namespace Artblog.API.Controllers
                     usersQuery = isAsc
                         ? usersQuery.OrderBy(u => u.UserName)
                         : usersQuery.OrderByDescending(u => u.UserName);
-
                 }
             }
 
@@ -250,7 +247,7 @@ namespace Artblog.API.Controllers
         {
             var count = await userManager.Users.CountAsync();
 
-            return Ok(count -1); // -1 because we do not count the admin
+            return Ok(count - 1); // -1 because we do not count the admin
         }
 
         // Delete: {apiBaseUrl}/api/auth/users/{id}
