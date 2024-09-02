@@ -119,7 +119,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // HTTPS redirection will not be used because the API will run locally 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseCors(options =>
 {
@@ -151,6 +151,8 @@ app.Use(
         await next();
     }
 );
+
+app.MapControllers();
 
 app.UseResponseCompression(); // Enable response compression
 
