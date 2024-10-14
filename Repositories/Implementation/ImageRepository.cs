@@ -41,10 +41,10 @@ namespace Artblog.API.Repositories.Implementation
             await file.CopyToAsync(stream);
 
             // Update the Database
-            //https://artblog.com/images/somefilename.jpg
+            //https://spaceofthoughts.com/images/somefilename.jpg
             var httpRequestImage = httpContextAccessor.HttpContext.Request;
             var urlPath =
-                $"{httpRequestImage.HttpContext.Request.Scheme}://{httpRequestImage.Host}{httpRequestImage.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
+                $"https://{httpRequestImage.Host}{httpRequestImage.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
 
             blogImage.Url = urlPath;
 

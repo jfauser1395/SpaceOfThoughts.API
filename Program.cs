@@ -109,6 +109,17 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+// Define the CORS policy restrict api access to https://spaceofthoughts.com and http://localhost:4200
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200", "https://spaceofthoughts.com")
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -121,12 +132,8 @@ if (app.Environment.IsDevelopment())
 // HTTPS redirection will not be used because the API will run locally 
 app.UseHttpsRedirection();
 
-app.UseCors(options =>
-{
-    options.AllowAnyHeader(); // Allow any header
-    options.AllowAnyOrigin(); // Allow any origin
-    options.AllowAnyMethod(); // Allow any method
-});
+// Apply the CORS policy
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();

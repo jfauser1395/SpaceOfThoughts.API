@@ -52,11 +52,13 @@ namespace Artblog.API.Controllers
             [FromForm] string title
         )
         {
+            // Call ValidateFileUpdate method to validate the file
             ValidateFileUpdate(file);
 
+            // Check if the ModelState is valid
             if (ModelState.IsValid)
             {
-                //File Update
+                // Create a new BlogImage object
                 var blogImage = new BlogImage
                 {
                     FileExtension = Path.GetExtension(file.FileName).ToLower(),
@@ -65,6 +67,7 @@ namespace Artblog.API.Controllers
                     DateCreated = DateTime.Now,
                 };
 
+                // Upload the file and get the updated BlogImage object
                 blogImage = await imageRepository.Upload(file, blogImage);
 
                 // Convert Domain Model to DTO
