@@ -114,7 +114,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins", builder =>
     {
-        builder.WithOrigins("http://localhost:4200", "https://spaceofthoughts.com")
+        builder.WithOrigins("http://localhost:4200", "https://spaceofthoughts.com")// while "http://localhost:4200" is only for testing
                .AllowAnyMethod()
                .AllowAnyHeader();
     });

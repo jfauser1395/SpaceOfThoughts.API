@@ -1,11 +1,8 @@
-﻿using Artblog.API.Data;
-using Artblog.API.Models.Domain;
+﻿using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Controllers
 {
@@ -151,19 +148,19 @@ namespace Artblog.API.Controllers
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
-            var category = await categoryRepository.DeleteAsync(id);
+            var deletedCategory = await categoryRepository.DeleteAsync(id);
 
-            if (category is null)
+            if (deletedCategory is null)
             {
                 return NotFound();
             }
 
             // Convert Domain model to DTO
-            var response = new Category
+            var response = new CategoryDto
             {
-                Id = category.Id,
-                Name = category.Name,
-                UrlHandle = category.UrlHandle
+                Id = deletedCategory.Id,
+                Name = deletedCategory.Name,
+                UrlHandle = deletedCategory.UrlHandle
             };
 
             return Ok(response);

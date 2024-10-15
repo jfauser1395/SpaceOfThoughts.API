@@ -1,7 +1,7 @@
 ﻿using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
 using Artblog.API.Repositories.Interface;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Artblog.API.Controllers
@@ -17,12 +17,19 @@ namespace Artblog.API.Controllers
             this.imageRepository = imageRepository;
         }
 
-        // GET: {apiBaseUrl}/api/Images
+        // GET: {apiBaseUrl}/api/Images?sortBy=example1&sortDirection=desc
         [HttpGet]
-        public async Task<IActionResult> GetAllImages()
+        [Authorize(Roles = "Writer")]
+        public async Task<IActionResult> GetAllImages(
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection
+        )
         {
             // Call image repository to get all images
-            var images = await imageRepository.GetAll();
+            var images = await imageRepository.GetAll(
+                sortBy,
+                sortDirection
+            );
 
             // Convert Domain model to DTO
             var response = new List<BlogImageDto>();
@@ -46,6 +53,7 @@ namespace Artblog.API.Controllers
 
         // Post: {apiBaseUrl}/api/images
         [HttpPost]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UploadImage(
             IFormFile file,
             [FromForm] string fileName,
@@ -100,6 +108,34 @@ namespace Artblog.API.Controllers
             {
                 ModelState.AddModelError("file", "File size cannot be more than 10MB");
             }
+        }
+
+
+        // Delete:{apiBaseUrl}/api/categories/{id}
+        [HttpDelete]
+        [Route("{id:guid}")]
+        [Authorize(Roles = "Writer")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
+        {
+            var deletedImage = await imageRepository.DeleteAsync(id);
+
+            if (deletedImage is null)
+            {
+                return NotFound();
+            }
+
+            // Convert Domain model to DTO
+            var response = new BlogImageDto
+            {
+                Id = deletedImage.Id,
+                Title = deletedImage.Title,
+                DateCreated = deletedImage.DateCreated,
+                FileExtension = deletedImage.FileExtension,
+                FileName = deletedImage.FileName,
+                Url = deletedImage.Url
+            };
+
+            return Ok(response);
         }
     }
 }

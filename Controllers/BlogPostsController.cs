@@ -1,9 +1,7 @@
 ﻿using Artblog.API.Models.Domain;
 using Artblog.API.Models.DTOs;
-using Artblog.API.Repositories.Implementation;
 using Artblog.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Artblog.API.Controllers

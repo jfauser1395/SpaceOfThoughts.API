@@ -1,7 +1,6 @@
 ﻿using Artblog.API.Data;
 using Artblog.API.Models.Domain;
 using Artblog.API.Repositories.Interface;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artblog.API.Repositories.Implementation
@@ -23,14 +22,39 @@ namespace Artblog.API.Repositories.Implementation
             this.dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<BlogImage>> GetAll()
+        public async Task<IEnumerable<BlogImage>> GetAll(
+            string? sortBy = null,
+            string? sortDirection = null
+        )
         {
-            return await dbContext.BlogImages.ToListAsync();
+            // Query
+            var blogImages = dbContext.BlogImages.AsQueryable();
+            
+            // Sorting
+            if(string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if(string.Equals(sortBy, "DateCreated", StringComparison.OrdinalIgnoreCase))
+                {
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "desc",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                        ? true 
+                        : false;   
+
+                    blogImages = isAsc
+                        ? blogImages.OrderBy(x => x.DateCreated)
+                        : blogImages.OrderByDescending(x => x.DateCreated);
+                }
+
+            }
+            return await blogImages.ToListAsync();
         }
 
         public async Task<BlogImage> Upload(IFormFile file, BlogImage blogImage)
         {
-            // Upload the Image to API/Image
+            // Upload the Image to API/Image folder
             var localPath = Path.Combine(
                 webHostEnvironment.ContentRootPath,
                 "Images",
@@ -52,6 +76,38 @@ namespace Artblog.API.Repositories.Implementation
             await dbContext.SaveChangesAsync();
 
             return blogImage;
+        }
+
+        public async Task<BlogImage?> DeleteAsync(Guid id)
+        {   
+            
+            var existingImage = await dbContext.BlogImages.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingImage is null)
+            {
+                return null;
+            }
+
+            // Delete the image from the Image folder
+
+            // Get the file path of the image
+            var filePath = Path.Combine(
+                webHostEnvironment.ContentRootPath,
+                "Images",
+                $"{existingImage.FileName}{existingImage.FileExtension}"
+            );
+
+            // Check if the file exists
+            if (File.Exists(filePath))
+            {
+                // Delete the file
+                File.Delete(filePath);
+            }
+
+            // Delete the image from the Database
+            dbContext.BlogImages.Remove(existingImage);
+            await dbContext.SaveChangesAsync();
+            return existingImage;          
         }
     }
 }
