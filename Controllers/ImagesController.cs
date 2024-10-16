@@ -51,7 +51,7 @@ namespace Artblog.API.Controllers
             return Ok(response);
         }
 
-        // Post: {apiBaseUrl}/api/images
+        // Post: {apiBaseUrl}/api/Images
         [HttpPost]
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UploadImage(
@@ -111,7 +111,7 @@ namespace Artblog.API.Controllers
         }
 
 
-        // Delete:{apiBaseUrl}/api/categories/{id}
+        // Delete:{apiBaseUrl}/api/Images/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         [Authorize(Roles = "Writer")]
