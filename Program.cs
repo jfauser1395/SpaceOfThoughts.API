@@ -62,7 +62,7 @@ builder
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-// Password requirements 
+// Password requirements
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false; // Do not require a digit in passwords
@@ -74,10 +74,19 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 // Configure JWT authentication
-builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+        var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+        // Check for possible null values
+        if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
+        {
+            throw new InvalidOperationException("JWT configuration values are missing");
+        }
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             AuthenticationType = "Jwt",
@@ -85,13 +94,14 @@ builder
             ValidateAudience = true, // Validate the audience of the token
             ValidateLifetime = true, // Validate the token's expiration
             ValidateIssuerSigningKey = true, // Validate the signing key
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Set the valid issuer
-            ValidAudience = builder.Configuration["Jwt:Audience"], // Set the valid audience
+            ValidIssuer = jwtIssuer, // Set the valid issuer
+            ValidAudience = jwtAudience, // Set the valid audience
             IssuerSigningKey = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]) // Set the signing key
+                System.Text.Encoding.UTF8.GetBytes(jwtKey) // Set the signing key
             )
         };
     });
+
 
 // Add rate limiting to protect the API from abuse
 builder.Services.AddRateLimiter(options =>
@@ -112,12 +122,16 @@ builder.Services.AddRateLimiter(options =>
 // Define the CORS policy restrict api access to https://spaceofthoughts.com and http://localhost:4200
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins", builder =>
-    {
-        builder.WithOrigins("http://localhost:4200", "https://spaceofthoughts.com")// while "http://localhost:4200" is only for testing
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
+    options.AddPolicy(
+        "AllowSpecificOrigins",
+        builder =>
+        {
+            builder
+                .WithOrigins("http://localhost:4200", "https://spaceofthoughts.com") // while "http://localhost:4200" is only for testing
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }
+    );
 });
 
 var app = builder.Build();
@@ -129,7 +143,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// HTTPS redirection will not be used because the API will run locally 
+// HTTPS redirection will not be used because the API will run locally
 app.UseHttpsRedirection();
 
 // Apply the CORS policy

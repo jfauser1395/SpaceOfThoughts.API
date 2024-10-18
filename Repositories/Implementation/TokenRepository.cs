@@ -18,19 +18,31 @@ namespace Artblog.API.Repositories.Implementation
 
         public string CreateJWTToken(IdentityUser user, List<string> roles)
         {
-            // Create Claims
-            var claims = new List<Claim> { new Claim(ClaimTypes.Email, user.Email), };
+            // Retrieve JWT configuration values
+            var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
+            var jwtIssuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
+            var jwtAudience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
 
+            // Create Claims
+            var claims = new List<Claim>();
+
+            // Add email claim if it's not null or empty
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            }
+
+            // Add role claims
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             // JWT Security Token Parameters
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: configuration["Jwt:Issuer"],
-                audience: configuration["Jwt:Audience"],
+                issuer: jwtIssuer,
+                audience: jwtAudience,
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: credentials
@@ -39,5 +51,6 @@ namespace Artblog.API.Repositories.Implementation
             // Return Token
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

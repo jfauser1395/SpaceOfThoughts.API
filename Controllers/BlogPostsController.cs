@@ -304,6 +304,14 @@ namespace Artblog.API.Controllers
                 ShortDescription = deletedBlogPost.ShortDescription,
                 Title = deletedBlogPost.Title,
                 UrlHandle = deletedBlogPost.UrlHandle,
+                Categories = deletedBlogPost
+                    .Categories.Select(category => new CategoryDto
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        UrlHandle = category.UrlHandle
+                    })
+                    .ToList()
             };
 
             return Ok(response);

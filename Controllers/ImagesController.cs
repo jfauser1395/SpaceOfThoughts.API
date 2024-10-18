@@ -26,10 +26,7 @@ namespace Artblog.API.Controllers
         )
         {
             // Call image repository to get all images
-            var images = await imageRepository.GetAll(
-                sortBy,
-                sortDirection
-            );
+            var images = await imageRepository.GetAll(sortBy, sortDirection);
 
             // Convert Domain model to DTO
             var response = new List<BlogImageDto>();
@@ -109,7 +106,6 @@ namespace Artblog.API.Controllers
                 ModelState.AddModelError("file", "File size cannot be more than 10MB");
             }
         }
-
 
         // Delete:{apiBaseUrl}/api/Images/{id}
         [HttpDelete]

@@ -48,7 +48,7 @@ namespace Artblog.API.Controllers
                     var response = new LoginResponseDto
                     {
                         Id = identityUser.Id,
-                        UserName = identityUser.UserName,
+                        UserName = identityUser.UserName ?? "Unknown User", // Default value if null
                         Email = request.Email,
                         Roles = roles.ToList(),
                         Token = jwtToken
@@ -161,27 +161,24 @@ namespace Artblog.API.Controllers
             [FromQuery] int? pageSize
         )
         {
+            // Ensure userManager is not null
+            if (userManager == null) throw new ArgumentNullException(nameof(userManager));
+
             // Filter out admin user by name to not be displayed on the client
-            var usersQuery = userManager.Users.AsQueryable().Where(u => u.UserName != "Admin");
+            var usersQuery = userManager.Users?.AsQueryable().Where(u => u.UserName != "Admin" && u.UserName != null) ?? Enumerable.Empty<IdentityUser>().AsQueryable();
 
             // Query
-            if (string.IsNullOrEmpty(query) == false)
+            if (!string.IsNullOrWhiteSpace(query))
             {
-                usersQuery = usersQuery.Where(u => u.UserName.Contains(query));
+                usersQuery = usersQuery.Where(u => u.UserName != null && u.UserName.Contains(query));
             }
 
             // Sort
-            if (string.IsNullOrEmpty(sortBy) == false)
+            if (!string.IsNullOrWhiteSpace(sortBy))
             {
                 if (string.Equals(sortBy, "userName", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(
-                        sortDirection,
-                        "asc",
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                        ? true
-                        : false;
+                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
 
                     usersQuery = isAsc
                         ? usersQuery.OrderBy(u => u.UserName)

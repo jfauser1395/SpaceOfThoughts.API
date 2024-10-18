@@ -29,25 +29,24 @@ namespace Artblog.API.Repositories.Implementation
         {
             // Query
             var blogImages = dbContext.BlogImages.AsQueryable();
-            
+
             // Sorting
-            if(string.IsNullOrWhiteSpace(sortBy) == false)
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
             {
-                if(string.Equals(sortBy, "DateCreated", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(sortBy, "DateCreated", StringComparison.OrdinalIgnoreCase))
                 {
                     var isAsc = string.Equals(
                         sortDirection,
                         "desc",
                         StringComparison.OrdinalIgnoreCase
                     )
-                        ? true 
-                        : false;   
+                        ? true
+                        : false;
 
                     blogImages = isAsc
                         ? blogImages.OrderBy(x => x.DateCreated)
                         : blogImages.OrderByDescending(x => x.DateCreated);
                 }
-
             }
             return await blogImages.ToListAsync();
         }
@@ -66,9 +65,9 @@ namespace Artblog.API.Repositories.Implementation
 
             // Update the Database
             //https://spaceofthoughts.com/images/somefilename.jpg
-            var httpRequestImage = httpContextAccessor.HttpContext.Request;
+            var httpRequestImage = httpContextAccessor?.HttpContext?.Request;
             var urlPath =
-                $"https://{httpRequestImage.Host}{httpRequestImage.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
+                $"https://{httpRequestImage?.Host}{httpRequestImage?.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
 
             blogImage.Url = urlPath;
 
@@ -79,8 +78,7 @@ namespace Artblog.API.Repositories.Implementation
         }
 
         public async Task<BlogImage?> DeleteAsync(Guid id)
-        {   
-            
+        {
             var existingImage = await dbContext.BlogImages.FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingImage is null)
@@ -107,7 +105,7 @@ namespace Artblog.API.Repositories.Implementation
             // Delete the image from the Database
             dbContext.BlogImages.Remove(existingImage);
             await dbContext.SaveChangesAsync();
-            return existingImage;          
+            return existingImage;
         }
     }
 }
