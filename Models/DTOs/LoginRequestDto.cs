@@ -1,4 +1,4 @@
-﻿namespace Artblog.API.Models.DTOs
+﻿namespace SpaceOfThoughts.API.Models.DTOs
 {
     public class LoginRequestDto
     {

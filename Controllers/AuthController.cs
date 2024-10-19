@@ -1,11 +1,11 @@
-﻿using Artblog.API.Models.DTOs;
-using Artblog.API.Repositories.Interface;
+﻿using SpaceOfThoughts.API.Models.DTOs;
+using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Artblog.API.Controllers
+namespace SpaceOfThoughts.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

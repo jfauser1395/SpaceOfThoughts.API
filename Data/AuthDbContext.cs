@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Artblog.API.Data
+namespace SpaceOfThoughts.API.Data
 {
     public class AuthDbContext : IdentityDbContext
     {

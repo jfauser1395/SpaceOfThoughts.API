@@ -1,8 +1,8 @@
 using System.IO.Compression;
 using System.Threading.RateLimiting;
-using Artblog.API.Data;
-using Artblog.API.Repositories.Implementation;
-using Artblog.API.Repositories.Interface;
+using SpaceOfThoughts.API.Data;
+using SpaceOfThoughts.API.Repositories.Implementation;
+using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;

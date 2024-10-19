@@ -1,7 +1,7 @@
-﻿using Artblog.API.Models.Domain;
+﻿using SpaceOfThoughts.API.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Artblog.API.Data
+namespace SpaceOfThoughts.API.Data
 {
     public class ApplicationDbContext : DbContext
     {

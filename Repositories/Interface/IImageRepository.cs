@@ -1,6 +1,6 @@
-﻿using Artblog.API.Models.Domain;
+﻿using SpaceOfThoughts.API.Models.Domain;
 
-namespace Artblog.API.Repositories.Interface
+namespace SpaceOfThoughts.API.Repositories.Interface
 {
     public interface IImageRepository
     {

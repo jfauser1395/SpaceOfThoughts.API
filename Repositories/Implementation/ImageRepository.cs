@@ -1,9 +1,9 @@
-﻿using Artblog.API.Data;
-using Artblog.API.Models.Domain;
-using Artblog.API.Repositories.Interface;
+﻿using SpaceOfThoughts.API.Data;
+using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using SpaceOfThoughts.API.Models.Domain;
 
-namespace Artblog.API.Repositories.Implementation
+namespace SpaceOfThoughts.API.Repositories.Implementation
 {
     public class ImageRepository : IImageRepository
     {

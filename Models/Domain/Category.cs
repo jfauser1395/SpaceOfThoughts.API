@@ -1,4 +1,4 @@
-﻿namespace Artblog.API.Models.Domain
+﻿namespace SpaceOfThoughts.API.Models.Domain
 {
     public class Category
     {

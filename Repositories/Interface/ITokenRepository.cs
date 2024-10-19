@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Artblog.API.Repositories.Interface
+namespace SpaceOfThoughts.API.Repositories.Interface
 {
     public interface ITokenRepository
     {

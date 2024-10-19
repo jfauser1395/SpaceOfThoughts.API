@@ -1,11 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Artblog.API.Repositories.Interface;
+using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Artblog.API.Repositories.Implementation
+namespace SpaceOfThoughts.API.Repositories.Implementation
 {
     public class TokenRepository : ITokenRepository
     {
