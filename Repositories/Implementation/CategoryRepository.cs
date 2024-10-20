@@ -5,37 +5,39 @@ using SpaceOfThoughts.API.Repositories.Interface;
 
 namespace SpaceOfThoughts.API.Repositories.Implementation
 {
+    // CategoryRepository handles CRUD operations for Category entities
     public class CategoryRepository : ICategoryRepository
     {
         private readonly ApplicationDbContext dbContext;
 
+        // Constructor to initialize ApplicationDbContext
         public CategoryRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
+        // Create a new category
         public async Task<Category> CreateAsync(Category category)
         {
-            await dbContext.Categories.AddAsync(category);
-            await dbContext.SaveChangesAsync();
-
-            return category;
+            await dbContext.Categories.AddAsync(category); // Add new category to the context
+            await dbContext.SaveChangesAsync(); // Save changes to the database
+            return category; // Return the created category
         }
 
+        // Delete a category by ID
         public async Task<Category?> DeleteAsync(Guid id)
         {
             var existingCategory = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
-
             if (existingCategory is null)
             {
-                return null;
+                return null; // Return null if the category was not found
             }
-
-            dbContext.Categories.Remove(existingCategory);
-            await dbContext.SaveChangesAsync();
-            return existingCategory;
+            dbContext.Categories.Remove(existingCategory); // Remove the category from the context
+            await dbContext.SaveChangesAsync(); // Save changes to the database
+            return existingCategory; // Return the deleted category
         }
 
+        // Get all categories with optional filtering, sorting, and pagination
         public async Task<IEnumerable<Category>> GetAllAsync(
             string? query = null,
             string? sortBy = null,
@@ -44,65 +46,54 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
             int? pageSize = 100
         )
         {
-            // Query
             var categories = dbContext.Categories.AsQueryable();
 
-            // Filtering
-            if (string.IsNullOrWhiteSpace(query) == false)
+            // Apply filtering
+            if (!string.IsNullOrWhiteSpace(query))
             {
                 categories = categories.Where(x => x.Name.Contains(query));
             }
-            // Sorting
-            if (string.IsNullOrWhiteSpace(sortBy) == false)
+
+            // Apply sorting
+            if (!string.IsNullOrWhiteSpace(sortBy))
             {
                 if (string.Equals(sortBy, "Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(
-                        sortDirection,
-                        "asc",
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                        ? true
-                        : false;
-
-                    categories = isAsc
-                        ? categories.OrderBy(x => x.Name)
-                        : categories.OrderByDescending(x => x.Name);
+                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
+                    categories = isAsc ? categories.OrderBy(x => x.Name) : categories.OrderByDescending(x => x.Name);
                 }
             }
 
-            // Pagination
-            // Page number 1 page size 5- skip 0, take 5  (and so on)
+            // Apply pagination
             var skipResult = (pageNumber - 1) * pageSize;
             categories = categories.Skip(skipResult ?? 0).Take(pageSize ?? 100);
 
-            return await categories.ToListAsync();
+            return await categories.ToListAsync(); // Return the list of categories
         }
 
+        // Get a category by ID
         public async Task<Category?> GetById(Guid id)
         {
-            return await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            return await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id); // Find the category by ID
         }
 
+        // Get the total count of categories
         public async Task<int> GetCount()
         {
-            return await dbContext.Categories.CountAsync();
+            return await dbContext.Categories.CountAsync(); // Count the number of categories
         }
 
+        // Update an existing category
         public async Task<Category?> UpdateAsync(Category category)
         {
-            var existingCategory = await dbContext.Categories.FirstOrDefaultAsync(c =>
-                c.Id == category.Id
-            );
-
+            var existingCategory = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);
             if (existingCategory != null)
             {
-                dbContext.Entry(existingCategory).CurrentValues.SetValues(category);
-                await dbContext.SaveChangesAsync();
-                return category;
+                dbContext.Entry(existingCategory).CurrentValues.SetValues(category); // Update category properties
+                await dbContext.SaveChangesAsync(); // Save changes to the database
+                return category; // Return the updated category
             }
-
-            return null;
+            return null; // Return null if the category was not found
         }
     }
 }

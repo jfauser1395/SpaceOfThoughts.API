@@ -6,7 +6,7 @@ using SpaceOfThoughts.API.Repositories.Interface;
 
 namespace SpaceOfThoughts.API.Controllers
 {
-    // The BlogPostsController manages blog post operations
+    // The BlogPostsController handles CRUD operations for blog posts
     [Route("api/[controller]")]
     [ApiController]
     public class BlogPostsController : ControllerBase

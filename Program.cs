@@ -39,7 +39,7 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 });
 
 // Inject DbContext service to the builder and pass the connection string
-var connectionString = builder.Configuration.GetConnectionString("ArtblogConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("SpaceOfThoughtsConnectionString");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)) // Use MySQL with auto-detected server version
 );
@@ -58,7 +58,7 @@ builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder
     .Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
-    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("ArtBlog")
+    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("SpaceOfThoughts")
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
