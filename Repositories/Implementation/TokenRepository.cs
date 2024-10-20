@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using SpaceOfThoughts.API.Repositories.Interface;
 
 namespace SpaceOfThoughts.API.Repositories.Implementation
 {
@@ -19,9 +19,15 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
         public string CreateJWTToken(IdentityUser user, List<string> roles)
         {
             // Retrieve JWT configuration values
-            var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
-            var jwtIssuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
-            var jwtAudience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
+            var jwtKey =
+                configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT Key is missing");
+            var jwtIssuer =
+                configuration["Jwt:Issuer"]
+                ?? throw new InvalidOperationException("JWT Issuer is missing");
+            var jwtAudience =
+                configuration["Jwt:Audience"]
+                ?? throw new InvalidOperationException("JWT Audience is missing");
 
             // Create Claims
             var claims = new List<Claim>();
@@ -51,6 +57,5 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
             // Return Token
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

@@ -1,5 +1,5 @@
-﻿using SpaceOfThoughts.API.Models.Domain;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceOfThoughts.API.Models.Domain;
 
 namespace SpaceOfThoughts.API.Data
 {

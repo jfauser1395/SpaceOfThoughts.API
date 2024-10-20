@@ -1,14 +1,14 @@
 using System.IO.Compression;
 using System.Threading.RateLimiting;
-using SpaceOfThoughts.API.Data;
-using SpaceOfThoughts.API.Repositories.Implementation;
-using SpaceOfThoughts.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using SpaceOfThoughts.API.Data;
+using SpaceOfThoughts.API.Repositories.Implementation;
+using SpaceOfThoughts.API.Repositories.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +74,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 // Configure JWT authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var jwtKey = builder.Configuration["Jwt:Key"];
@@ -82,7 +83,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         var jwtAudience = builder.Configuration["Jwt:Audience"];
 
         // Check for possible null values
-        if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
+        if (
+            string.IsNullOrEmpty(jwtKey)
+            || string.IsNullOrEmpty(jwtIssuer)
+            || string.IsNullOrEmpty(jwtAudience)
+        )
         {
             throw new InvalidOperationException("JWT configuration values are missing");
         }
@@ -101,7 +106,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
-
 
 // Add rate limiting to protect the API from abuse
 builder.Services.AddRateLimiter(options =>

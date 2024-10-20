@@ -1,12 +1,13 @@
-﻿using SpaceOfThoughts.API.Models.DTOs;
-using SpaceOfThoughts.API.Repositories.Interface;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SpaceOfThoughts.API.Models.DTOs;
+using SpaceOfThoughts.API.Repositories.Interface;
 
 namespace SpaceOfThoughts.API.Controllers
 {
+    // The AuthController handles user authentication, registration, and management
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -14,6 +15,7 @@ namespace SpaceOfThoughts.API.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly ITokenRepository tokenRepository;
 
+        // Constructor to initialize UserManager and TokenRepository
         public AuthController(
             UserManager<IdentityUser> userManager,
             ITokenRepository tokenRepository
@@ -23,28 +25,24 @@ namespace SpaceOfThoughts.API.Controllers
             this.tokenRepository = tokenRepository;
         }
 
-        // POST: {apiBaseUrl}/api/auth/login
+        // POST: {apiBaseUrl}/api/auth/login - Endpoint to log in a user with email and password
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             var identityUser = await userManager.FindByEmailAsync(request.Email);
-
             if (identityUser is not null)
             {
-                // Check Password
+                // Check if the provided password matches the user's password
                 var checkPasswordResult = await userManager.CheckPasswordAsync(
                     identityUser,
                     request.Password
                 );
-
                 if (checkPasswordResult)
                 {
                     var roles = await userManager.GetRolesAsync(identityUser);
-
-                    // Create a Token and Response
+                    // Create a JWT token and form the login response
                     var jwtToken = tokenRepository.CreateJWTToken(identityUser, roles.ToList());
-
                     var response = new LoginResponseDto
                     {
                         Id = identityUser.Id,
@@ -53,16 +51,15 @@ namespace SpaceOfThoughts.API.Controllers
                         Roles = roles.ToList(),
                         Token = jwtToken
                     };
-
                     return Ok(response);
                 }
             }
+            // If the email or password is incorrect, return a validation problem
             ModelState.AddModelError("", "Email or Password is incorrect");
-
             return ValidationProblem(ModelState);
         }
 
-        // POST: {apiBaseUrl}/api/auth/register
+        // POST: {apiBaseUrl}/api/auth/register - Endpoint to register a new user
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
@@ -99,29 +96,27 @@ namespace SpaceOfThoughts.API.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            // Create IdentityUser object
+            // Create a new IdentityUser object
             var user = new IdentityUser
             {
                 UserName = request.UserName?.Trim(),
                 Email = request.Email?.Trim()
             };
 
-            // Create user
+            // Create the user in the database
             var identityResult = await userManager.CreateAsync(user, request.Password);
-
             if (identityResult.Succeeded)
             {
-                // Add role to user (Reader)
+                // Add the default role of 'Reader' to the new user
                 identityResult = await userManager.AddToRoleAsync(user, "Reader");
-
                 if (identityResult.Succeeded)
                 {
                     return Ok();
                 }
                 else
                 {
+                    // Loop through identity errors and add to ModelState
                     int errorIndex = 1;
-
                     if (identityResult.Errors.Any())
                     {
                         foreach (var error in identityResult.Errors)
@@ -134,8 +129,8 @@ namespace SpaceOfThoughts.API.Controllers
             }
             else
             {
+                // Loop through identity errors and add to ModelState
                 int errorIndex = 1;
-
                 if (identityResult.Errors.Any())
                 {
                     foreach (var error in identityResult.Errors)
@@ -145,11 +140,10 @@ namespace SpaceOfThoughts.API.Controllers
                     }
                 }
             }
-
             return ValidationProblem(ModelState);
         }
 
-        // GET: {apiBaseUrl}/api/auth/users
+        // GET: {apiBaseUrl}/api/auth/users - Endpoint to get all users with optional query, sorting, and pagination
         [HttpGet]
         [Route("users")]
         [Authorize(Roles = "Writer")]
@@ -162,31 +156,41 @@ namespace SpaceOfThoughts.API.Controllers
         )
         {
             // Ensure userManager is not null
-            if (userManager == null) throw new ArgumentNullException(nameof(userManager));
+            if (userManager == null)
+                throw new ArgumentNullException(nameof(userManager));
 
-            // Filter out admin user by name to not be displayed on the client
-            var usersQuery = userManager.Users?.AsQueryable().Where(u => u.UserName != "Admin" && u.UserName != null) ?? Enumerable.Empty<IdentityUser>().AsQueryable();
+            // Filter out the admin user by name to not be displayed on the client
+            var usersQuery =
+                userManager
+                    .Users?.AsQueryable()
+                    .Where(u => u.UserName != "Admin" && u.UserName != null)
+                ?? Enumerable.Empty<IdentityUser>().AsQueryable();
 
-            // Query
+            // Apply query filtering if provided
             if (!string.IsNullOrWhiteSpace(query))
             {
-                usersQuery = usersQuery.Where(u => u.UserName != null && u.UserName.Contains(query));
+                usersQuery = usersQuery.Where(u =>
+                    u.UserName != null && u.UserName.Contains(query)
+                );
             }
 
-            // Sort
+            // Apply sorting if provided
             if (!string.IsNullOrWhiteSpace(sortBy))
             {
                 if (string.Equals(sortBy, "userName", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
-
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    );
                     usersQuery = isAsc
                         ? usersQuery.OrderBy(u => u.UserName)
                         : usersQuery.OrderByDescending(u => u.UserName);
                 }
             }
 
-            // Pagination
+            // Apply pagination
             // Pag number 1 page size 5- skip 0, take 5 (and so on)
             var skipResults = (pageNumber - 1) * pageSize;
             usersQuery = usersQuery.Skip(skipResults ?? 0).Take(pageSize ?? 100);
@@ -206,11 +210,10 @@ namespace SpaceOfThoughts.API.Controllers
                 };
                 response.Add(userResponse);
             }
-
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/auth/users/{id}
+        // GET: {apiBaseUrl}/api/auth/users/{id} - Endpoint to get a user by their ID
         [HttpGet]
         [Route("users/{id}")]
         [Authorize(Roles = "Writer")]
@@ -221,7 +224,6 @@ namespace SpaceOfThoughts.API.Controllers
             {
                 return NotFound();
             }
-
             var roles = await userManager.GetRolesAsync(user);
             var response = new UserResponseDto
             {
@@ -230,21 +232,19 @@ namespace SpaceOfThoughts.API.Controllers
                 Email = user.Email,
                 Roles = roles
             };
-
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/auth/count
+        // GET: {apiBaseUrl}/api/auth/count - Endpoint to get the total count of users, excluding the admin
         [HttpGet]
         [Route("count")]
         public async Task<IActionResult> GetUsersTotal()
         {
             var count = await userManager.Users.CountAsync();
-
             return Ok(count - 1); // -1 because we do not count the admin
         }
 
-        // Delete: {apiBaseUrl}/api/auth/users/{id}
+        // DELETE: {apiBaseUrl}/api/auth/users/{id} - Endpoint to delete a user by their ID
         [HttpDelete]
         [Route("users/{id}")]
         [Authorize(Roles = "Writer")]
@@ -255,13 +255,11 @@ namespace SpaceOfThoughts.API.Controllers
             {
                 return NotFound();
             }
-
             var result = await userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
-
             return Ok();
         }
     }

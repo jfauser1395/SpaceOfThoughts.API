@@ -1,7 +1,7 @@
-﻿using SpaceOfThoughts.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceOfThoughts.API.Data;
 using SpaceOfThoughts.API.Models.Domain;
 using SpaceOfThoughts.API.Repositories.Interface;
-using Microsoft.EntityFrameworkCore;
 
 namespace SpaceOfThoughts.API.Repositories.Implementation
 {

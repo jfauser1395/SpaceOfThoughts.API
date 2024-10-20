@@ -1,8 +1,8 @@
-﻿using SpaceOfThoughts.API.Models.Domain;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SpaceOfThoughts.API.Models.Domain;
 using SpaceOfThoughts.API.Models.DTOs;
 using SpaceOfThoughts.API.Repositories.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SpaceOfThoughts.API.Controllers
 {

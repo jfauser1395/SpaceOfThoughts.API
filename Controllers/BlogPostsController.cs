@@ -1,11 +1,12 @@
-﻿using SpaceOfThoughts.API.Models.Domain;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SpaceOfThoughts.API.Models.Domain;
 using SpaceOfThoughts.API.Models.DTOs;
 using SpaceOfThoughts.API.Repositories.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SpaceOfThoughts.API.Controllers
 {
+    // The BlogPostsController manages blog post operations
     [Route("api/[controller]")]
     [ApiController]
     public class BlogPostsController : ControllerBase
@@ -13,6 +14,7 @@ namespace SpaceOfThoughts.API.Controllers
         private readonly IBlogPostRepository blogPostRepository;
         private readonly ICategoryRepository categoryRepository;
 
+        // Constructor to initialize repositories
         public BlogPostsController(
             IBlogPostRepository blogPostRepository,
             ICategoryRepository categoryRepository
@@ -22,12 +24,12 @@ namespace SpaceOfThoughts.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-        // POST: {apiBaseUrl}/api/blogposts
+        // POST: {apiBaseUrl}/api/blogposts - Create a new blog post
         [HttpPost]
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
         {
-            //Convert DTO to Domain
+            // Convert DTO to Domain
             var blogPost = new BlogPost
             {
                 Author = request.Author,
@@ -40,7 +42,6 @@ namespace SpaceOfThoughts.API.Controllers
                 UrlHandle = request.UrlHandle,
                 Categories = new List<Category>()
             };
-
             foreach (var categoryGuid in request.Categories)
             {
                 var existingCategory = await categoryRepository.GetById(categoryGuid);
@@ -49,9 +50,7 @@ namespace SpaceOfThoughts.API.Controllers
                     blogPost.Categories.Add(existingCategory);
                 }
             }
-
             blogPost = await blogPostRepository.CreateAsync(blogPost);
-
             // Convert Domain Model back to DTO
             var response = new BlogPostDto
             {
@@ -73,11 +72,10 @@ namespace SpaceOfThoughts.API.Controllers
                     })
                     .ToList()
             };
-
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/blogposts?query=example@sortBy=title@sortDirection=desc
+        // GET: {apiBaseUrl}/api/blogposts?query=example&sortBy=title&sortDirection=desc - Get all blog posts with optional query, sorting, and pagination
         [HttpGet]
         public async Task<IActionResult> GetAllBlogPosts(
             [FromQuery] string? query,
@@ -94,7 +92,6 @@ namespace SpaceOfThoughts.API.Controllers
                 pageNumber,
                 pageSize
             );
-
             // Convert Domain model to DTO
             var response = new List<BlogPostDto>();
             foreach (var blogPost in blogPosts)
@@ -122,23 +119,20 @@ namespace SpaceOfThoughts.API.Controllers
                     }
                 );
             }
-
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/blogposts/{id}
+        // GET: {apiBaseUrl}/api/blogposts/{id} - Get a blog post by its ID
         [HttpGet]
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetBlogPostById([FromRoute] Guid id)
         {
             // Get the BlogPost from Repository
             var blogPost = await blogPostRepository.GetByIdAsync(id);
-
             if (blogPost == null)
             {
                 return NotFound();
             }
-
             // Convert Domain Model to DTO
             var response = new BlogPostDto
             {
@@ -160,33 +154,29 @@ namespace SpaceOfThoughts.API.Controllers
                     })
                     .ToList()
             };
-
             return Ok(response);
         }
 
-        // GET: {apiBaseUrl}/api/blogposts/count
+        // GET: {apiBaseUrl}/api/blogposts/count - Get the total count of blog posts
         [HttpGet]
         [Route("count")]
         public async Task<IActionResult> GetBlogPostTotal()
         {
             var count = await blogPostRepository.GetCount();
-
             return Ok(count);
         }
 
-        // GET: {apiBaseUrl}/api/blogPosts/{urlHandle}
+        // GET: {apiBaseUrl}/api/blogPosts/{urlHandle} - Get a blog post by its URL handle
         [HttpGet]
         [Route("{urlHandle}")]
         public async Task<IActionResult> GetBlogPostByUrl([FromRoute] string urlHandle)
         {
             // Get Blog Post details from repository
             var blogPost = await blogPostRepository.GetByUrlHandleAsync(urlHandle);
-
             if (blogPost == null)
             {
                 return NotFound();
             }
-
             // Convert Domain Model to DTO
             var response = new BlogPostDto
             {
@@ -208,11 +198,10 @@ namespace SpaceOfThoughts.API.Controllers
                     })
                     .ToList()
             };
-
             return Ok(response);
         }
 
-        // PUT: {apiBaseUrl}/api/blogposts/{id}
+        // PUT: {apiBaseUrl}/api/blogposts/{id} - Update a blog post by its ID
         [HttpPut]
         [Route("{id:Guid}")]
         [Authorize(Roles = "Writer")]
@@ -235,25 +224,20 @@ namespace SpaceOfThoughts.API.Controllers
                 UrlHandle = request.UrlHandle,
                 Categories = new List<Category>()
             };
-
             foreach (var categoryGuid in request.Categories)
             {
                 var existingCategory = await categoryRepository.GetById(categoryGuid);
-
                 if (existingCategory != null)
                 {
                     blogPost.Categories.Add(existingCategory);
                 }
             }
-
             // Call repository to update blogpost Domain Model
             var updatedBlogPost = await blogPostRepository.UpdateAsync(blogPost);
-
             if (updatedBlogPost == null)
             {
                 return NotFound();
             }
-
             // Convert Domain Model back to DTO
             var response = new BlogPostDto
             {
