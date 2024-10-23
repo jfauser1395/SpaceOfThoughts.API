@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,10 @@ builder
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("SpaceOfThoughts")
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
+
+// Configure Data Protection to persist keys
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"/var/mykeys")); // Update this path accordingly, consider additional security measures for the keys
 
 // Password requirements
 builder.Services.Configure<IdentityOptions>(options =>

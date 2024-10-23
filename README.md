@@ -3,7 +3,7 @@
 
 ## Installation on Linux:
 
-### 1. To make use of the API on Linux make sure the .net sdk is installed properly:
+### 1. To make use of the API on Linux make sure the .net sdk 8 is installed properly:
 	
 
 	sudo apt install dotnet-sdk-8.0
@@ -45,11 +45,18 @@
 	EXIT;
 
 ### 3. After cloning the repository navigate into the root folder of the project and execute the database migrations
-	
-	sudo dotnet ef migrations add InitialCreate --context ApplicationDbContext
-	sudo dotnet ef migrations add InitialCreateAuth --context AuthDbContext
-	sudo dotnet ef database update --context ApplicationDbContext
-	sudo dotnet ef database update --context AuthDbContext
+
+#### First delete all files inside the Migrations folder	
+	sudo rm Migrations/ -rf   
+	sudo mkdir Migrations
+#### Install the EF Core tools globally
+	sudo dotnet tool install --global dotnet-ef
+
+
+	dotnet ef migrations add InitialCreate --context ApplicationDbContext
+	dotnet ef migrations add InitialCreateAuth --context AuthDbContext
+	dotnet ef database update --context ApplicationDbContext
+	dotnet ef database update --context AuthDbContext
 
 ### 4. Finally start the API
 
