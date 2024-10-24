@@ -22,9 +22,15 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
         public string CreateJWTToken(IdentityUser user, List<string> roles)
         {
             // Retrieve JWT configuration values from app settings
-            var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
-            var jwtIssuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
-            var jwtAudience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
+            var jwtKey =
+                configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT Key is missing");
+            var jwtIssuer =
+                configuration["Jwt:Issuer"]
+                ?? throw new InvalidOperationException("JWT Issuer is missing");
+            var jwtAudience =
+                configuration["Jwt:Audience"]
+                ?? throw new InvalidOperationException("JWT Audience is missing");
 
             // Create Claims
             var claims = new List<Claim>();

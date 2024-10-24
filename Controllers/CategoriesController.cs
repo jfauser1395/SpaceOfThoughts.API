@@ -60,12 +60,14 @@ namespace SpaceOfThoughts.API.Controllers
             var response = new List<CategoryDto>();
             foreach (var category in categories)
             {
-                response.Add(new CategoryDto
-                {
-                    Id = category.Id,
-                    Name = category.Name,
-                    UrlHandle = category.UrlHandle
-                });
+                response.Add(
+                    new CategoryDto
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        UrlHandle = category.UrlHandle
+                    }
+                );
             }
             return Ok(response);
         }

@@ -59,16 +59,28 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
             {
                 if (string.Equals(sortBy, "Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
-                    categories = isAsc ? categories.OrderBy(x => x.Name) : categories.OrderByDescending(x => x.Name);
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    );
+                    categories = isAsc
+                        ? categories.OrderBy(x => x.Name)
+                        : categories.OrderByDescending(x => x.Name);
                 }
+            }
+            else
+            {
+                // Default OrderBy if none provided
+                categories = categories.OrderBy(c => c.Id);
             }
 
             // Apply pagination
             var skipResult = (pageNumber - 1) * pageSize;
             categories = categories.Skip(skipResult ?? 0).Take(pageSize ?? 100);
 
-            return await categories.ToListAsync(); // Return the list of categories
+            // Return the list of categories
+            return await categories.ToListAsync();
         }
 
         // Get a category by ID
@@ -86,7 +98,9 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
         // Update an existing category
         public async Task<Category?> UpdateAsync(Category category)
         {
-            var existingCategory = await dbContext.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);
+            var existingCategory = await dbContext.Categories.FirstOrDefaultAsync(c =>
+                c.Id == category.Id
+            );
             if (existingCategory != null)
             {
                 dbContext.Entry(existingCategory).CurrentValues.SetValues(category); // Update category properties

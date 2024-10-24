@@ -162,9 +162,8 @@ namespace SpaceOfThoughts.API.Controllers
             // Filter out the admin user by name to not be displayed on the client
             var usersQuery =
                 userManager
-                    .Users?.AsQueryable()
-                    .Where(u => u.UserName != "Admin" && u.UserName != null)
-                ?? Enumerable.Empty<IdentityUser>().AsQueryable();
+                    .Users?.Where(u => u.UserName != "Admin" && u.UserName != null)
+                    .AsQueryable() ?? Enumerable.Empty<IdentityUser>().AsQueryable();
 
             // Apply query filtering if provided
             if (!string.IsNullOrWhiteSpace(query))
@@ -189,6 +188,11 @@ namespace SpaceOfThoughts.API.Controllers
                         : usersQuery.OrderByDescending(u => u.UserName);
                 }
             }
+            else
+            {
+                // Default OrderBy if none provided
+                usersQuery = usersQuery.OrderBy(u => u.Id);
+            }
 
             // Apply pagination
             // Pag number 1 page size 5- skip 0, take 5 (and so on)
@@ -198,6 +202,7 @@ namespace SpaceOfThoughts.API.Controllers
             // Convert to DTO
             var users = await usersQuery.ToListAsync();
             var response = new List<UserResponseDto>();
+
             foreach (var user in users)
             {
                 var roles = await userManager.GetRolesAsync(user);
@@ -210,6 +215,7 @@ namespace SpaceOfThoughts.API.Controllers
                 };
                 response.Add(userResponse);
             }
+
             return Ok(response);
         }
 

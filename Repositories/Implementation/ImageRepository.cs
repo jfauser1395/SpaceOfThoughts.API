@@ -37,7 +37,11 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
             {
                 if (string.Equals(sortBy, "DateCreated", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    );
                     blogImages = isAsc
                         ? blogImages.OrderBy(x => x.DateCreated)
                         : blogImages.OrderByDescending(x => x.DateCreated);
@@ -63,7 +67,8 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
 
             // Construct the URL for accessing the image
             var httpRequestImage = httpContextAccessor?.HttpContext?.Request;
-            var urlPath = $"https://{httpRequestImage?.Host}{httpRequestImage?.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
+            var urlPath =
+                $"https://{httpRequestImage?.Host}{httpRequestImage?.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
             blogImage.Url = urlPath;
 
             // Add the image details to the database

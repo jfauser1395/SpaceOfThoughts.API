@@ -59,9 +59,20 @@ namespace SpaceOfThoughts.API.Repositories.Implementation
             {
                 if (string.Equals(sortBy, "PublishedDate", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase);
-                    blogPosts = isAsc ? blogPosts.OrderBy(x => x.PublishedDate) : blogPosts.OrderByDescending(x => x.PublishedDate);
+                    var isAsc = string.Equals(
+                        sortDirection,
+                        "asc",
+                        StringComparison.OrdinalIgnoreCase
+                    );
+                    blogPosts = isAsc
+                        ? blogPosts.OrderBy(x => x.PublishedDate)
+                        : blogPosts.OrderByDescending(x => x.PublishedDate);
                 }
+            }
+            else
+            {
+                // Default OrderBy if none provided
+                blogPosts = blogPosts.OrderBy(bp => bp.Id);
             }
 
             // Apply pagination
