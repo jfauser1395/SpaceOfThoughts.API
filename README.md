@@ -24,7 +24,7 @@
 	USE mysql;
 #### Now we need to setup a database that is matching our connection string setup 
 #### Default credentials can be found in the "appsettings.json" 
-#### "SpaceOfThoughtsConnectionString": "server=localhost;database=artblog;User=root;Password=44059513;"
+#### "SpaceOfThoughtsConnectionString": "server=localhost;database=sot;User=root;Password=44059513;"
 
 #### First we need to make sure that the root user has the same password as we set up in the connection string
 	
