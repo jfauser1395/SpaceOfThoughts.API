@@ -51,8 +51,8 @@ namespace SpaceOfThoughts.API.Data
             {
                 Id = adminUserId,
                 UserName = "Admin",
-                Email = "admin@SpaceOfThoughts.com", // Example email, change before publishing
-                NormalizedEmail = "ADMIN@SPACEOFTHOUGHTS.COM",
+                Email = "admin@artblog.com", // Example email, change before publishing
+                NormalizedEmail = "ARTBLOG.COM",
                 NormalizedUserName = "ADMIN"
             };
 

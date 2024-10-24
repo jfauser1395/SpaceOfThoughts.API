@@ -31,6 +31,6 @@
         public bool IsVisible { get; set; }
 
         // Categories associated with the blog post
-        public required ICollection<Category> Categories { get; set; }
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
     }
 }

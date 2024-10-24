@@ -263,7 +263,7 @@ namespace SpaceOfThoughts.API.Controllers
             return Ok(response);
         }
 
-        // Delete:{apiBaseUrl}/api/blogposts/{id}
+        // Delete:{apiBaseUrl}/api/blogposts/{id} - Endpoint to delete a blogpost by its ID
         [HttpDelete]
         [Route("{id:guid}")]
         [Authorize(Roles = "Writer")]
