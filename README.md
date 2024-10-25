@@ -85,6 +85,6 @@
 
 ### 5. Next follow the installation instructions in the UI README
 
-(https://github.com/jfauser1395/SpaceOfThoughts.UI?tab=readme-ov-file)
+[SpaceOfThoughts.UI](https://github.com/jfauser1395/SpaceOfThoughts.UI?tab=readme-ov-file)
 
 	
