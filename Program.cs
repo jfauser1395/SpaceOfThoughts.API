@@ -63,8 +63,8 @@ builder
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-// Configure Data Protection to persist keys
-builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"/var/mykeys")); // Update this path accordingly, consider additional security measures for the keys
+//// Configure Data Protection to persist keys
+//builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"/var/mykeys")); // Update this path accordingly, consider additional security measures for the keys
 
 // Password requirements
 builder.Services.Configure<IdentityOptions>(options =>
