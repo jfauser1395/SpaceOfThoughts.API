@@ -2,7 +2,7 @@
 
 ## Installation on Linux:
 
-### 1. To make use of the API on Linux make sure the .net sdk 8 and the entity framework core is installed properly:
+### 1. .NET Core Setup
 	
 	sudo apt install dotnet-sdk-8.0
 
@@ -19,7 +19,18 @@
 
 	dotnet ef --version
 
-### 2. Then we need to go ahead and install MySQL server and create a database 
+#### Make sure to create the directory and set the appropriate permissions for the keys:
+
+	sudo mkdir /var/mykeys
+	sudo chown $(whoami):$(id -gn) /var/mykeys
+	sudo chmod 700 /var/mykeys
+
+#### Install a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
+
+	dotnet tool update -g linux-dev-certs
+	dotnet linux-dev-certs install
+
+### 2. MySQL Database setup 
 
 	sudo apt install mysql-server 
 	sudo mysql_secure_installation
@@ -55,11 +66,12 @@
 	
 	EXIT;
 
-### 3. Now clone the repository and navigate into the root folder of the project to execute the database migrations
+### 3. Database Migrations
 
 #### First delete all files inside the Migrations folder
 
 	sudo rm -rf Migrations/*
+
 
 #### Now we need execute the database migrations
 
@@ -68,18 +80,9 @@
 	dotnet ef database update --context ApplicationDbContext
 	dotnet ef database update --context AuthDbContext
 
-### 4.1 Make sure to create the directory and set the appropriate permissions for the keys:
 
-	sudo mkdir /var/mykeys
-	sudo chown $(whoami):$(id -gn) /var/mykeys
-	sudo chmod 700 /var/mykeys
 
-### 4.2 This is how we are installing a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
-
-	dotnet tool update -g linux-dev-certs
-	dotnet linux-dev-certs install
-
-### 4.3 Finally start the API
+### 4. Finally start the API
 
 	sudo dotnet run
 
