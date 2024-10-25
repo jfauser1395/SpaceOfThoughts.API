@@ -19,17 +19,6 @@
 
 	dotnet ef --version
 
-#### Make sure to create the directory and set the appropriate permissions for the keys:
-
-	sudo mkdir /var/mykeys
-	sudo chown $(whoami):$(id -gn) /var/mykeys
-	sudo chmod 700 /var/mykeys
-
-#### Install a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
-
-	dotnet tool update -g linux-dev-certs
-	dotnet linux-dev-certs install
-
 ### 2. MySQL Database setup 
 
 	sudo apt install mysql-server 
@@ -83,6 +72,13 @@
 
 
 ### 4. Finally start the API
+
+#### Install a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
+
+	dotnet tool update -g linux-dev-certs
+	dotnet linux-dev-certs install
+
+### Run the application
 
 	sudo dotnet run
 
