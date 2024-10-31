@@ -2,7 +2,7 @@
 
 ## Installation on Linux:
 
-### 1. .NET Core Setup
+## 1. .NET Core Setup
 	
 	sudo apt install dotnet-sdk-8.0
 
@@ -19,7 +19,7 @@
 
 	dotnet ef --version
 
-### 2. MySQL Database setup 
+## 2. MySQL Database setup 
 
 	sudo apt install mysql-server 
 	sudo mysql_secure_installation
@@ -55,7 +55,7 @@
 	
 	EXIT;
 
-### 3. Database Migrations
+## 3. Database Migrations
 
 #### First delete all files inside the Migrations folder
 
@@ -71,7 +71,7 @@
 
 
 
-### 4. Finally start the API
+## 4. Finally start the API
 
 #### Install a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
 
@@ -82,7 +82,7 @@
 
 	sudo dotnet run
 
-### 5. Next follow the installation instructions in the UI README
+## 5. Next follow the installation instructions in the UI README
 
 [SpaceOfThoughts.UI](https://github.com/jfauser1395/SpaceOfThoughts.UI?tab=readme-ov-file)
 
