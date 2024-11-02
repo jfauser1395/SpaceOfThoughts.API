@@ -25,11 +25,11 @@
 	ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '44059513';
 	FLUSH PRIVILEGES;
 
-#### Create the artblog database
+#### Create the SpaceOfThoughts aka SPOT database
 	
 	CREATE DATABASE SPOT;
 
-#### Grant all privileges to the root user on the artblog database
+#### Grant all privileges to the root user on the SPOT database
 	
 	GRANT ALL PRIVILEGES ON SPOT.* TO 'root'@'localhost';
 	FLUSH PRIVILEGES;
@@ -70,7 +70,7 @@
 
 ## 4. Finally start the API
 
-#### Install a self signed development certificate (The warning in the terminal after running the API will persist, but that is a bug that has been fixt in .NET 9)
+#### Install a self signed development certificate (The warning in the terminal after running the API will persist, but that is a bug that has been fixed in .NET 9)
 
 	mkdir -p $HOME/.pki/nssdb
 	dotnet dev-certs https
