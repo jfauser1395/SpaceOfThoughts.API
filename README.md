@@ -1,25 +1,8 @@
 # SpaceOfThoughts.API
 
-## Installation on Linux:
+## Installation on Linux (tested on Ubuntu):
 
-## 1. .NET Core Setup
-	
-	sudo apt install dotnet-sdk-8.0
-
-#### Install the EF Core tools globally
-
-	dotnet tool install --global dotnet-ef
-
-#### To add it for the current terminal session, run:
-
-	echo 'export PATH="$PATH:/home/$(whoami)/.dotnet/tools"' >> ~/.profile
-	source ~/.profile
-
-#### Check it the installation was successful
-
-	dotnet ef --version
-
-## 2. MySQL Database setup 
+## 1. MySQL Database setup 
 
 	sudo apt install mysql-server 
 	sudo mysql_secure_installation
@@ -55,12 +38,28 @@
 	
 	EXIT;
 
+## 2. .NET Core Setup
+	
+	sudo apt install dotnet-sdk-8.0
+
+#### Install the EF Core tools globally
+
+	dotnet tool install --global dotnet-ef
+
+#### To add it for the current terminal session, run:
+
+	echo 'export PATH="$PATH:/home/$(whoami)/.dotnet/tools"' >> ~/.profile
+	source ~/.profile
+
+#### Check it the installation was successful
+
+	dotnet ef --version
+
 ## 3. Database Migrations
 
 #### First delete all files inside the Migrations folder
 
 	sudo rm -rf Migrations/*
-
 
 #### Now we need execute the database migrations
 
@@ -69,14 +68,16 @@
 	dotnet ef database update --context ApplicationDbContext
 	dotnet ef database update --context AuthDbContext
 
-
-
 ## 4. Finally start the API
 
-#### Install a self signed development certificate (The warning will persists but that is a bug that has been fixt in .NET 9)
+#### Install a self signed development certificate (The warning in the terminal after running the API will persist, but that is a bug that has been fixt in .NET 9)
 
-	dotnet tool update -g linux-dev-certs
-	dotnet linux-dev-certs install
+	mkdir -p $HOME/.pki/nssdb
+	dotnet dev-certs https
+	sudo -E dotnet dev-certs https -ep /usr/local/share/ca-certificates/aspnet-dev-$(whoami).crt --format PEM
+	sudo chmod 644 /usr/local/share/ca-certificates/aspnet-dev-$(whoami).crt
+	certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n localhost -i /usr/local/share/ca-certificates/aspnet-dev-$(whoami).crt
+	sudo update-ca-certificates
 
 ### Run the application
 
